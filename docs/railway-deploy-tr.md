@@ -2,6 +2,8 @@
 
 Proje: **Binera**. Site başlığı: **Binera Agent Market**. Kaynak repo: [nrlartt/binera](https://github.com/nrlartt/binera). Yerel klasörün mevcut `agentmarket` adı komutlardaki dosya yoludur.
 
+Mevcut proje ve servis bağlandı: Railway `binera`, ortam `production`, kaynak `nrlartt/binera`, dal `main`. Canlı site: https://binera-production.up.railway.app. Bu kurulum için tekrar `init` veya `add` çalıştırma; aşağıdaki oluşturma komutları yeni kurulum içindir. Railway'de bekleyen servis oluşturma değişikliği uygulanarak ilk GitHub yayını tamamlandı.
+
 Repo kökündeki `railway.json`, mevcut Dockerfile ile Node 22 standalone image üretir. Çalıştırma komutu `node server.js`; container içinde `npm start` override'ı kullanma. Uygulama `0.0.0.0` üzerinde `PORT` değişkenini dinler. Aşağıdaki kurulum portu 3000 olarak sabitler. Yeni uygulama dependency'si, veritabanı veya volume gerekmez.
 
 ## 1. Hesabı bağla
@@ -40,8 +42,17 @@ npx --yes @railway/cli@5.49.6 domain --service binera --port 3000
 
 Son komut gerçek HTTPS adresini verir. `up` mevcut klasörü yükler; GitHub bağlantısı zorunlu değildir. `.env.local` Git ve Docker kapsamı dışında kalır. Railway'e dosya olarak yükleme; anahtarları servisin **Variables** ekranına gir.
 
+Domain oluştuktan sonra `APP_ORIGIN` değerini bu HTTPS origin'e ayarla ve yeniden yayınla. Bu, Railway TLS proxy'sinin arkasında teklif ve diğer POST isteklerinin doğru kaynağını doğrular. Mevcut Binera servisi için değer tanımlandı:
+
+```powershell
+npx --yes @railway/cli@5.49.6 variable set --service binera "APP_ORIGIN=https://binera-production.up.railway.app"
+```
+
+Özel domain'e geçersen `APP_ORIGIN` değerini de değiştir. Sonuna bir yol ekleme; tek kalıcı site origin'i kullan.
+
 | Değişken | Kullanım |
 | --- | --- |
+| `APP_ORIGIN` | Zorunlu production site origin'i; mevcut değer `https://binera-production.up.railway.app`. |
 | `SCAN_API_KEY` | Yoğun kullanım için önerilir; anonim 8004scan erişiminin kotası düşüktür. |
 | `BSC_RPC_URL` | Yukarıda public BSC RPC tanımlanır. Production için kendi sağlayıcının HTTPS RPC adresini kullanabilirsin. |
 | `OPENAI_API_KEY`, `OPENAI_MODEL` | İsteğe bağlı intent interpretation. Anahtar yoksa kurallar çalışır; ranking deterministiktir. Model örneği `.env.example` içinde. |
@@ -70,6 +81,10 @@ Değişikliklerden sonra aynı klasörde `npx --yes @railway/cli@5.49.6 up --ser
 
 İlk yayında tek replica kullan. Bellekteki cache ve rate limit replica'lar arasında paylaşılmaz; kapasite artırırken ortak rate limit/ingress korumasını ayrıca kur. Railway kullanım bütçesi ve provider kota alarmlarını ayarla. Deployment loglarını ve son çalışan sürümü rollback için sakla.
 
-Yerelde CLI 5.49.6 komutları doğrulandı. `railway.json` resmi JSON şemasından geçti; mevcut standalone build `0.0.0.0:3107` üzerinde ana sayfa ve JavaScript asset için HTTP 200 verdi. Docker Desktop engine çalışmadığı için container build bu makinede doğrulanamadı; Railway build/deploy logları yayın sırasında kontrol edilmeli. Bu rehber hazırlanırken Railway'de public deployment oluşturulmadı.
+9 Eylül 2026'da `5c8cb89` commit'i Railway'de Docker ile build edildi ve `dea3e402-d860-4781-9ef8-7b0c13c57e53` deployment'ı SUCCESS durumuna geçti. Ana sayfa, `/api/health` ve `/api/market` HTTP 200 verdi. Chain ve discovery sağlıklı; intent kurallarla çalışıyor, TermiX yapılandırılmamış. GitHub Application checks aynı commit için başarılı.
+
+Repo şu anda **private**: oturum açmamış ziyaretçi 404 alır. Başvuru için kaynak kod erişimini sağlamalısın; gizlilik tercihi otomatik değiştirilmedi. Gerçek ücretli iş, teslimat ve izin iptali kanıtları hâlâ ayrı başvuru eşikleridir.
+
+CLI artık config-as-code için kullanımdan kaldırma uyarısı gösteriyor; mevcut `railway.json` 1 Aralık 2026'ya kadar destekleniyor. Uzun vadeli bakımda resmi IaC geçişini planla; çalışan yayında yeni bağımlılık eklenmedi.
 
 Kaynaklar: [Railway CLI](https://docs.railway.com/cli), [Dockerfile](https://docs.railway.com/builds/dockerfiles), [config reference](https://docs.railway.com/config-as-code/reference), [healthcheck](https://docs.railway.com/deployments/healthchecks).

@@ -1,6 +1,6 @@
 # Submission package
 
-Status: **NOT READY FOR FINAL SUBMISSION** until real deployment and paid evidence are supplied. The application has passing automated checks and live signed quotes, not completed paid jobs.
+Status: **NOT READY FOR FINAL SUBMISSION** until paid evidence and reviewer access are supplied. [Binera Agent Market is deployed on Railway](https://binera-production.up.railway.app); application and dependency health checks passed on September 9, 2026. The GitHub repository is currently private. The application has passing automated checks and live signed quotes, not completed paid jobs.
 
 - [English description](project-description.md): truthful text for the form.
 - [Owner launch guide (Turkish)](../docs/owner-launch-guide-tr.md): credentials, domain, wallet, evidence and form steps.

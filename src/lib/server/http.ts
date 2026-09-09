@@ -47,7 +47,10 @@ export function errorResponse(error: unknown) {
 }
 export function sameOrigin(request: Request) {
   const origin = request.headers.get("origin");
-  if (origin && origin !== new URL(request.url).origin) throw new PublicError("Please submit this request from the marketplace.", 403);
+  // A TLS-terminating proxy can expose an internal HTTP URL to Next.js.
+  // Trust only operator configuration, never caller-supplied forwarded headers.
+  const expected = new URL(process.env.APP_ORIGIN || request.url).origin;
+  if (origin && origin !== expected) throw new PublicError("Please submit this request from the marketplace.", 403);
 }
 export async function requestJson(request: Request): Promise<unknown> {
   const reader = request.body?.getReader(); if (!reader) throw new PublicError("A request body is required.", 400);
