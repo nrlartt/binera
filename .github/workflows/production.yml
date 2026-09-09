@@ -1,0 +1,23 @@
+name: Production verification
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: |
+          node -e "require('fs').rmSync('submission/evidence/production-check.json', { force: true })"
+          npm run check:production
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: production-verification
+          path: submission/evidence/production-check.json
+          retention-days: 14

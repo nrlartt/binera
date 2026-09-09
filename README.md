@@ -109,6 +109,8 @@ See [release and competition readiness assessment](docs/release-readiness-2026-0
 
 ## Submission preparation
 
+Run `npm run check:production` to check public pages, dependency health, market-data freshness and origin enforcement without requesting a quote or transaction. The report is saved to `submission/evidence/production-check.json`. The manual **Production verification** GitHub workflow runs the same dependency-free check and retains its report for 14 days. This is a deployment smoke test, not continuous monitoring or funded E2E evidence.
+
 Read [the owner launch guide in Turkish](docs/owner-launch-guide-tr.md) for domain, credentials, passkey setup, funding, evidence and submission steps. The English [project description](submission/project-description.md) and [experiment plan](submission/agent-advantage-report.md) are drafts; they do not assert unmeasured outcomes.
 
 Run `npm run audit:services` to inspect a bounded, throttled sample of actual registry identities and negotiate read-only quotes by category. Results go to `submission/evidence/service-audit.json`. A rate-limited result is unconfirmed, not proof that a service is dead. Avoid repeated full scans on anonymous API quotas.

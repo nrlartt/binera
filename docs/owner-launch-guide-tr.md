@@ -2,6 +2,14 @@
 
 Bu dosya uygulama kodundan sonra gereken hesap, imza ve kanıt işlerini anlatır. Build'in geçmesi bunların tamamlandığı anlamına gelmez. Şifre, seed phrase, private key veya API token'ı sohbete göndermemelisin.
 
+## Güncel durum ve şimdi yapacağın işlem
+
+Site yayında: https://binera-production.up.railway.app. GitHub ve Railway kurulumu tamamlandı; aşağıdaki kurulum bölümlerini yeniden uygulaman gerekmiyor. Repo senin tercihinle private kalıyor. Dört kategori görev hazırlama, canlı bağlam, teklif karşılaştırma, ayrı kanıt durumları, Saved agents ve Profile eklendi. Profil ve kayıtlı agent'lar cihazda saklanır.
+
+Sıradaki gerçek kanıt adımı: kalıcı sitede passkey hesabını aç, seçtiğin agent'ın güncel teklifini incele ve kabul ettiğin bütçeyle işi tamamla. Passkey ve fonlama onaylarını sen verirsin. İşten sonra **My agents → Export public references** ile kayıtları dışa aktar. Bu export tek başına tamamlanmış iş kanıtı sayılmaz; zincir durumu ve çıktı birlikte kontrol edilecek. Çıktı bağlantısını ve grant/funding/revoke işlem referanslarını koru. Dört kategori kanıtı ve inceleyen kişinin adı olmadan başvuruyu tamamlandı diye işaretlemiyoruz.
+
+Yayın kontrolü: `npm run check:production`. GitHub Actions içindeki **Production verification → Run workflow** ile aynı kontrolü çalıştırabilir, raporu workflow artifact'ından indirebilirsin. Bu manuel kontrol sürekli uptime izlemesi veya ücretli E2E testi değildir. Başvuru kanıt kontrolü ayrı: `npm run check:release`.
+
 ## 1. Zaman ve organizasyon
 
 [Resmi kayıt formu](https://docs.google.com/forms/d/e/1FAIpQLSdFb30r24sZcFJVDbMqXNJ1_45BJHanc7eFqwUniScDYZfX9A/viewform) build bitişini **9 Eylül 2026 12:00 UTC / Türkiye 15:00** olarak veriyor. Form adı Registration. Nihai teslimin aynı formdan mı yoksa başka bir kanaldan mı yapıldığını, Altana seçeneği formda görünmediği için partner katılımının nasıl bildirileceğini organizatörle teyit et. Formu ben göndermedim; katılım şartlarını ve ödül adresini sen onaylamalısın.

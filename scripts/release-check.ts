@@ -15,7 +15,12 @@ function https(value: string) { const url = new URL(value); if (url.protocol !==
 try {
   const m = manifestSchema.parse(JSON.parse(await readFile("submission/release.json", "utf8")));
   await check("Public application", async () => { const u = https(m.publicUrl); const health = z.object({ status: z.literal("ok") }).parse(await remoteJson(new URL("/api/health", u).href)); await remoteText(u.href); return `Public application and dependencies: ${health.status}`; });
-  await check("Repository", async () => { https(m.repositoryUrl); await remoteText(m.repositoryUrl); return "Repository URL responds publicly; review source/version separately."; });
+  await check("Repository", async () => {
+    https(m.repositoryUrl);
+    try { await remoteText(m.repositoryUrl); }
+    catch { throw new Error("Anonymous repository access could not be verified. A private repository needs explicit reviewer access or a later visibility change; a network error can also fail this check."); }
+    return "Repository URL responds publicly; review source/version separately.";
+  });
   for (const category of ["rebalancing", "grid", "yield", "health"]) await check(`${category} paid delivery`, async () => {
     const e = m.categoryEvidence.find(e => e.category === category); if (!e) throw new Error("Completed job evidence is missing.");
     const job = await getErc8183Job(serverNetwork, BigInt(e.jobId));
