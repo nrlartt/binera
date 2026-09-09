@@ -1,0 +1,38 @@
+{
+  "name": "agentmarket",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "node scripts/start.mjs",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "tsx --test tests/*.test.ts",
+    "test:live": "tsx scripts/live-check.ts",
+    "test:e2e": "playwright test",
+    "audit:services": "tsx scripts/service-audit.ts",
+    "check:release": "tsx scripts/release-check.ts"
+  },
+  "dependencies": {
+    "@altananetwork/sdk": "^0.9.0",
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "lucide-react": "^1.43.0",
+    "next": "^16.3.4",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "viem": "^2.56.3",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@types/node": "^26.5.0",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.7",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.3.4",
+    "tsx": "^4.23.13",
+    "typescript": "^6.0.3"
+  }
+}

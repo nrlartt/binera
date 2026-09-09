@@ -1,0 +1,42 @@
+{
+  "checkedAt": "2026-09-09T00:48:07.721Z",
+  "automatedChecksPass": false,
+  "notice": "This checklist is not an organizer eligibility decision or a security audit. Inspect service quality, receipt-to-job links, key scopes and manual review evidence.",
+  "checks": [
+    {
+      "name": "Public application",
+      "passed": false,
+      "detail": "Invalid URL"
+    },
+    {
+      "name": "Repository",
+      "passed": false,
+      "detail": "Invalid URL"
+    },
+    {
+      "name": "rebalancing paid delivery",
+      "passed": false,
+      "detail": "Completed job evidence is missing."
+    },
+    {
+      "name": "grid paid delivery",
+      "passed": false,
+      "detail": "Completed job evidence is missing."
+    },
+    {
+      "name": "yield paid delivery",
+      "passed": false,
+      "detail": "Completed job evidence is missing."
+    },
+    {
+      "name": "health paid delivery",
+      "passed": false,
+      "detail": "Completed job evidence is missing."
+    },
+    {
+      "name": "Human evidence review",
+      "passed": false,
+      "detail": "No reviewer recorded. Automated checks do not evaluate output quality or prove session semantics."
+    }
+  ]
+}

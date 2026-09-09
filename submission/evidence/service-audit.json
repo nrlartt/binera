@@ -1,0 +1,410 @@
+{
+  "observedAt": "2026-09-09T00:57:01.918Z",
+  "discoveryCount": 123,
+  "warnings": [],
+  "scope": "Bounded registry discovery; up to seven identities per category (one most-reviewed plus six recently updated), plus up to four explicitly supplied real registry identities, deduplicated; details checked sequentially with 1.8-second spacing. Rate-limited or failed reads are unconfirmed, not proof of a dead service. These checks and quotes do not verify paid delivery or strategy execution.",
+  "checks": [
+    {
+      "id": "scan-56-265375",
+      "name": "BNB LP Range Rebalancer",
+      "categories": [
+        "rebalancing"
+      ],
+      "source": "https://8004scan.io/agents/56/265375",
+      "available": true,
+      "state": "compatible",
+      "message": "Live service and payment identity checked. A signed quote is still required; delivery and investment performance are not verified.",
+      "observedAt": "2026-09-09T00:56:00.813Z",
+      "responseMs": 1934
+    },
+    {
+      "id": "scan-56-269224",
+      "name": "Grid Trader",
+      "categories": [
+        "grid"
+      ],
+      "source": "https://8004scan.io/agents/56/269224",
+      "available": true,
+      "state": "compatible",
+      "message": "Live service and payment identity checked. A signed quote is still required; delivery and investment performance are not verified.",
+      "observedAt": "2026-09-09T00:58:25.234Z",
+      "responseMs": 1856
+    },
+    {
+      "id": "scan-56-269228",
+      "name": "Health Factor Monitor",
+      "categories": [
+        "rebalancing",
+        "health"
+      ],
+      "source": "https://8004scan.io/agents/56/269228",
+      "available": true,
+      "state": "compatible",
+      "message": "Live service and payment identity checked. A signed quote is still required; delivery and investment performance are not verified.",
+      "observedAt": "2026-09-09T00:56:09.681Z",
+      "responseMs": 838
+    },
+    {
+      "id": "scan-56-292801",
+      "name": "LEROY_CYTO",
+      "categories": [
+        "yield",
+        "health"
+      ],
+      "source": "https://8004scan.io/agents/56/292801",
+      "available": false,
+      "state": "unconfirmed",
+      "message": "The data source is busy. Please try again shortly.",
+      "observedAt": "2026-09-09T00:56:43.300Z",
+      "responseMs": 242
+    },
+    {
+      "id": "scan-56-292939",
+      "name": "bnb-grid-trader-test.agent",
+      "categories": [
+        "grid"
+      ],
+      "source": "https://8004scan.io/agents/56/292939",
+      "available": false,
+      "state": "unconfirmed",
+      "message": "The data source is busy. Please try again shortly.",
+      "observedAt": "2026-09-09T00:56:33.068Z",
+      "responseMs": 230
+    },
+    {
+      "id": "scan-56-301934",
+      "name": "Pubg.agent",
+      "categories": [
+        "yield"
+      ],
+      "source": "https://8004scan.io/agents/56/301934",
+      "available": false,
+      "state": "unconfirmed",
+      "message": "The data source is busy. Please try again shortly.",
+      "observedAt": "2026-09-09T00:56:41.255Z",
+      "responseMs": 229
+    },
+    {
+      "id": "scan-56-302257",
+      "name": "Brain on BNB — Venus Health Factor Monitor",
+      "categories": [
+        "health"
+      ],
+      "source": "https://8004scan.io/agents/56/302257",
+      "available": false,
+      "state": "unconfirmed",
+      "message": "The data source is busy. Please try again shortly.",
+      "observedAt": "2026-09-09T00:56:47.411Z",
+      "responseMs": 248
+    },
+    {
+      "id": "scan-56-302610",
+      "name": "test.agent",
+      "categories": [
+        "rebalancing",
+        "grid"
+      ],
+      "source": "https://8004scan.io/agents/56/302610",
+      "available": false,
+      "state": "unconfirmed",
+      "message": "The provider is unavailable. Please try again later.",
+      "observedAt": "2026-09-09T00:56:26.084Z",
+      "responseMs": 876
+    },
+    {
+      "id": "scan-56-310249",
+      "name": "Macro Calendar",
+      "categories": [
+        "rebalancing"
+      ],
+      "source": "https://8004scan.io/agents/56/310249",
+      "available": false,
+      "state": "unsupported",
+      "message": "This agent has not published a compatible live activation endpoint.",
+      "observedAt": "2026-09-09T00:56:02.983Z",
+      "responseMs": 367
+    },
+    {
+      "id": "scan-56-325413",
+      "name": "Sentinels LP Rebalancer",
+      "categories": [
+        "rebalancing"
+      ],
+      "source": "https://8004scan.io/agents/56/325413",
+      "available": false,
+      "state": "unconfirmed",
+      "message": "The provider is unavailable. Please try again later.",
+      "observedAt": "2026-09-09T00:56:19.004Z",
+      "responseMs": 964
+    },
+    {
+      "id": "scan-56-331794",
+      "name": "SMEAI Reference Grid Viability Checker",
+      "categories": [
+        "grid"
+      ],
+      "source": "https://8004scan.io/agents/56/331794",
+      "available": false,
+      "state": "unsupported",
+      "message": "This agent uses an external activation flow. Open its provider page to review the requirements.",
+      "observedAt": "2026-09-09T00:56:31.037Z",
+      "responseMs": 763
+    },
+    {
+      "id": "scan-56-336599",
+      "name": "MANDATE House Keeper A",
+      "categories": [
+        "rebalancing",
+        "grid",
+        "yield",
+        "health"
+      ],
+      "source": "https://8004scan.io/agents/56/336599",
+      "available": false,
+      "state": "unsupported",
+      "message": "This agent has not published a compatible live activation endpoint.",
+      "observedAt": "2026-09-09T00:56:21.150Z",
+      "responseMs": 337
+    },
+    {
+      "id": "scan-56-336623",
+      "name": "Gridwright",
+      "categories": [
+        "grid"
+      ],
+      "source": "https://8004scan.io/agents/56/336623",
+      "available": false,
+      "state": "unsupported",
+      "message": "This agent uses an external activation flow. Open its provider page to review the requirements.",
+      "observedAt": "2026-09-09T00:56:28.458Z",
+      "responseMs": 572
+    },
+    {
+      "id": "scan-56-340032",
+      "name": "LP Agent 1 by 4LPHA",
+      "categories": [
+        "rebalancing",
+        "yield"
+      ],
+      "source": "https://8004scan.io/agents/56/340032",
+      "available": false,
+      "state": "unsupported",
+      "message": "This agent has not published a compatible live activation endpoint.",
+      "observedAt": "2026-09-09T00:56:11.816Z",
+      "responseMs": 334
+    },
+    {
+      "id": "scan-56-340232",
+      "name": "Lending Agent 2 by 4LPHA",
+      "categories": [
+        "health"
+      ],
+      "source": "https://8004scan.io/agents/56/340232",
+      "available": false,
+      "state": "unconfirmed",
+      "message": "The data source is busy. Please try again shortly.",
+      "observedAt": "2026-09-09T00:56:49.452Z",
+      "responseMs": 226
+    },
+    {
+      "id": "scan-56-341225",
+      "name": "yieldrouter — capacity-aware yield optimisation",
+      "categories": [
+        "yield"
+      ],
+      "source": "https://8004scan.io/agents/56/341225",
+      "available": true,
+      "state": "compatible",
+      "message": "Live service and payment identity checked. A signed quote is still required; delivery and investment performance are not verified.",
+      "observedAt": "2026-09-09T00:56:56.871Z",
+      "responseMs": 1520
+    },
+    {
+      "id": "scan-56-341554",
+      "name": "Lattice",
+      "categories": [
+        "grid"
+      ],
+      "source": "https://8004scan.io/agents/56/341554",
+      "available": false,
+      "state": "unsupported",
+      "message": "This agent uses an external activation flow. Open its provider page to review the requirements.",
+      "observedAt": "2026-09-09T00:56:23.394Z",
+      "responseMs": 434
+    },
+    {
+      "id": "scan-56-341555",
+      "name": "Sluicegate",
+      "categories": [
+        "yield"
+      ],
+      "source": "https://8004scan.io/agents/56/341555",
+      "available": false,
+      "state": "unconfirmed",
+      "message": "The data source is busy. Please try again shortly.",
+      "observedAt": "2026-09-09T00:56:39.220Z",
+      "responseMs": 229
+    },
+    {
+      "id": "scan-56-341556",
+      "name": "Keel",
+      "categories": [
+        "health"
+      ],
+      "source": "https://8004scan.io/agents/56/341556",
+      "available": false,
+      "state": "unconfirmed",
+      "message": "The data source is busy. Please try again shortly.",
+      "observedAt": "2026-09-09T00:56:53.544Z",
+      "responseMs": 243
+    },
+    {
+      "id": "scan-56-341563",
+      "name": "marketplace-operated-rebalance-planner",
+      "categories": [
+        "rebalancing"
+      ],
+      "source": "https://8004scan.io/agents/56/341563",
+      "available": true,
+      "state": "compatible",
+      "message": "Live service and payment identity checked. A signed quote is still required; delivery and investment performance are not verified.",
+      "observedAt": "2026-09-09T00:56:16.228Z",
+      "responseMs": 2607
+    },
+    {
+      "id": "scan-56-341564",
+      "name": "marketplace-operated-yield-planner",
+      "categories": [
+        "yield"
+      ],
+      "source": "https://8004scan.io/agents/56/341564",
+      "available": false,
+      "state": "unconfirmed",
+      "message": "The data source is busy. Please try again shortly.",
+      "observedAt": "2026-09-09T00:56:37.187Z",
+      "responseMs": 258
+    },
+    {
+      "id": "scan-56-341565",
+      "name": "marketplace-operated-loan-health-check",
+      "categories": [
+        "health"
+      ],
+      "source": "https://8004scan.io/agents/56/341565",
+      "available": false,
+      "state": "unconfirmed",
+      "message": "The data source is busy. Please try again shortly.",
+      "observedAt": "2026-09-09T00:56:51.495Z",
+      "responseMs": 230
+    },
+    {
+      "id": "scan-56-341628",
+      "name": "IVL Rebalancer",
+      "categories": [
+        "rebalancing"
+      ],
+      "source": "https://8004scan.io/agents/56/341628",
+      "available": true,
+      "state": "compatible",
+      "message": "Live service and payment identity checked. A signed quote is still required; delivery and investment performance are not verified.",
+      "observedAt": "2026-09-09T00:56:07.029Z",
+      "responseMs": 2238
+    },
+    {
+      "id": "scan-56-46501",
+      "name": "Syenite",
+      "categories": [
+        "yield"
+      ],
+      "source": "https://8004scan.io/agents/56/46501",
+      "available": false,
+      "state": "unconfirmed",
+      "message": "The data source is busy. Please try again shortly.",
+      "observedAt": "2026-09-09T00:56:45.360Z",
+      "responseMs": 256
+    }
+  ],
+  "coverage": [
+    {
+      "category": "rebalancing",
+      "listed": 48,
+      "protocolAvailable": 4,
+      "task": "Research PancakeSwap WBNB/USDT LP range management on BNB Chain. Include observed pool data, time, fee assumptions and risks. Do not move funds.",
+      "quotes": [
+        {
+          "agentId": "scan-56-265375",
+          "provider": "0x20f1cA5d1e5A3Ee94C29DbF95e6BF6ceA6a8d64b",
+          "price": "100000000000000000",
+          "currency": "0xcE24439F2D9C6a2289F741120FE202248B666666",
+          "negotiationHash": "0x20eacc3c2e907fea6ab3b6149d40c64a73fee1e656e4cfc1f719391088513ac0",
+          "fetchedAt": "2026-09-09T00:56:59.934Z",
+          "expiresAt": 1788916320,
+          "deliverables": "A sourced research report with observed block numbers, timestamps, strategy assumptions and explicit risk flags."
+        }
+      ],
+      "paidExecution": "NOT_TESTED",
+      "categoryAutomation": "NOT_VERIFIED"
+    },
+    {
+      "category": "grid",
+      "listed": 33,
+      "protocolAvailable": 1,
+      "task": "Research a BNB/USDT grid strategy on BNB Chain. Include observed market data, fees, range assumptions and downside risks. Do not place orders.",
+      "quotes": [
+        {
+          "agentId": "scan-56-269224",
+          "provider": "0xB8143345687aA5A527f4f9568D508EBbC612d06D",
+          "price": "500000000000000000",
+          "currency": "0xcE24439F2D9C6a2289F741120FE202248B666666",
+          "negotiationHash": "0xcb1586ffcff596c62844bb0da43b44c6c32ee4e839052c9d273b3b2111d8df3f",
+          "fetchedAt": "2026-09-09T00:58:25.874Z",
+          "expiresAt": 1788916406,
+          "deliverables": "A sourced research report with observed block numbers, timestamps, strategy assumptions and explicit risk flags."
+        }
+      ],
+      "paidExecution": "NOT_TESTED",
+      "categoryAutomation": "NOT_VERIFIED"
+    },
+    {
+      "category": "yield",
+      "listed": 45,
+      "protocolAvailable": 1,
+      "task": "Research USDT yield opportunities on BNB Chain. Compare sources, timestamps, fees and risk flags. Do not move funds.",
+      "quotes": [
+        {
+          "agentId": "scan-56-341225",
+          "provider": "0xCE6f9c8360c522985DA487E303C3692A7362df48",
+          "price": "100000000000000000",
+          "currency": "0xcE24439F2D9C6a2289F741120FE202248B666666",
+          "negotiationHash": "0x7ffd5705d8de0201c40c7ea610d0ad0ee433d378b0c593a91493727ecfd9e5ed",
+          "fetchedAt": "2026-09-09T00:57:01.085Z",
+          "expiresAt": 1788916321,
+          "deliverables": "A sourced research report with observed block numbers, timestamps, strategy assumptions and explicit risk flags."
+        }
+      ],
+      "paidExecution": "NOT_TESTED",
+      "categoryAutomation": "NOT_VERIFIED"
+    },
+    {
+      "category": "health",
+      "listed": 29,
+      "protocolAvailable": 1,
+      "task": "Research Venus lending health factor and liquidation thresholds on BNB Chain. Include observed market data and risk explanations. Do not move funds.",
+      "quotes": [
+        {
+          "agentId": "scan-56-269228",
+          "provider": "0x91F4602760e1627007BFc16F78A74cF8B9De8Da2",
+          "price": "500000000000000000",
+          "currency": "0xcE24439F2D9C6a2289F741120FE202248B666666",
+          "negotiationHash": "0x2f3a93f0ed54dc88ab5266501c557f1a934b83c4792001f919a05ec0b6444c9a",
+          "fetchedAt": "2026-09-09T00:57:01.918Z",
+          "expiresAt": 1788916322,
+          "deliverables": "A sourced research report with observed block numbers, timestamps, strategy assumptions and explicit risk flags."
+        }
+      ],
+      "paidExecution": "NOT_TESTED",
+      "categoryAutomation": "NOT_VERIFIED"
+    }
+  ],
+  "lastRecheckAt": "2026-09-09T00:58:25.875Z"
+}
