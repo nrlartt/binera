@@ -1,0 +1,15 @@
+﻿{
+    "pool":  "0x36696169C63e42cd08ce11f5deeBbCeBae652050",
+    "pair":  "WBNB / USDT",
+    "protocol":  "PancakeSwap v3",
+    "feePercent":  0.05,
+    "price":  748.5529941803309,
+    "tick":  -66185,
+    "wbnbBalance":  "5056.560342667137659055",
+    "usdtBalance":  "7362273.253376382017100197",
+    "blockNumber":  "120869141",
+    "timestamp":  "2026-09-09T11:20:02.000Z",
+    "fetchedAt":  "2026-09-09T11:20:03.553Z",
+    "source":  "https://bscscan.com/address/0x36696169C63e42cd08ce11f5deeBbCeBae652050",
+    "note":  "Pool spot price and token balances. Balances include fees; these are not an APY, TVL estimate or executable quote."
+}

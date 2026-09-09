@@ -1,5 +1,11 @@
 # Submission package
 
+Current production domain: https://binera.xyz. The original Railway domain remains available for its domain-bound passkeys.
+
+Prepared evidence materials: [Altana](altana-evidence.md), [PancakeSwap](pancakeswap-benefit-report.md), [owner steps and Railway settings](../docs/partner-completion-tr.md).
+
+Run `npm run collect:evidence -- --input <activity.json> --mapping <job-categories.json>` to verify completed jobs and delivery commitments from a public activity export. The tool writes candidates without changing the release manifest or signing transactions. Account and pool observations do not substitute for paid delivery or paired measurements.
+
 Status: **NOT READY FOR FINAL SUBMISSION** until paid evidence and reviewer access are supplied. [Binera Agent Market is deployed on Railway](https://binera-production.up.railway.app); application and dependency health checks passed on September 9, 2026. The GitHub repository is currently private. The application has passing automated checks and live signed quotes, not completed paid jobs.
 
 - [English description](project-description.md): truthful text for the form.
