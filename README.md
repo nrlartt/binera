@@ -55,25 +55,11 @@ The browser configuration uses installed Microsoft Edge. Change `launchOptions.c
 
 For optional read-only price negotiation set `LIVE_AGENT_ID` to an actual registry ID before `npm run test:live`. No test creates an account, funds a job or executes a transaction. Live tests may fail if their upstream services are down.
 
-The requested low-risk USDT journey currently returns related agents with missing risk evidence, not falsely confirmed low-risk recommendations. Funding, scoped session registration, execution receipts, delivery and revocation **have not been exercised with a funded user account**. They require a passkey-capable browser, BNB for registration/relay fees, U for the quoted job and explicit user approval. These are release gates, not passing tests.
-
-## Trust and evidence boundaries
-
-The product keeps integration claims separate from independently inspectable evidence:
-
-- Main track: all four categories have equal discovery, comparison and activation surfaces. The default marketplace only includes BSC identities that recently passed Binera's service and payment-wallet checks. Browse full registry is a discovery layer and clearly labels identities that are not proven hireable.
-- Altana: buyer-side scoped sessions expose call allowlists, token and BNB caps, expiry, Keystore reads and revocation controls. Prize qualification still requires public explorer receipts proving an agent-owned Altana wallet, grant, session-key execution and revoke. Tests cannot substitute for those transactions.
-- TermiX: no TermiX integration is required for eligibility. The uncompleted Agent Advantage Report must contain three real agent-versus-human task pairs with time, total cost, quality scoring and raw outputs; at least one must cover trading, equities or security.
-- PancakeSwap: live v3 pool reads support LP research, but prize evidence must demonstrate a measured benefit to a real trader or liquidity provider. A price card or hypothetical return is insufficient.
-- 8004scan: identity, endpoint publication, endpoint health, hiring compatibility and verified delivery remain separate. An API key increases quota; it does not make registrations functional.
-
-Run `npm run check:release` to keep owner-controlled evidence gaps visible. Do not fill evidence fields with test fixtures or unsupported claims.
+Live provider checks depend on external services and may fail when an upstream endpoint is unavailable or rate-limited.
 
 ## Deployment
 
-Deploy to Railway using the included `railway.json` and Dockerfile. Follow [the Railway deployment guide](docs/railway-deploy-tr.md) for login, project linking, runtime variables and HTTPS domain commands. Railway runs `node server.js`, checks `/` for startup and restarts failed processes. Monitor `/api/health` separately for live dependency health.
-
-No public deployment is claimed until a successful deploy and URL verification are recorded. Passkeys are origin-bound; use a stable HTTPS domain before creating a production account.
+Deploy to Railway using the included `railway.json` and Dockerfile. Runtime configuration is documented in [.env.example](.env.example). Railway runs `node server.js`; `/api/health` reports application and dependency health.
 
 Or deploy the included container:
 
@@ -116,22 +102,7 @@ The header offers Connect wallet with EIP-6963 discovery and a legacy injected-p
 
 Altana SDK 0.9 does not accept injected wallets as its session signer. Users create or unlock their separate passkey marketplace account for activation. A connected browser wallet can send BNB or the SDK-configured U payment token to that account after reviewing the recipient, amount and wallet confirmation. Transfers require BNB Smart Chain; displayed transaction hashes mean submitted, with confirmation available in the explorer. Extension tests use a test-only provider for discovery and account events; real funded wallet transfers remain untested.
 
-See [release and competition readiness assessment](docs/release-readiness-2026-09-09.md) for the September 9 audit, release gates and official submission timing.
-
-
-## Submission preparation
-
-Run `npm run check:production` to check public pages, dependency health, market-data freshness and origin enforcement without requesting a quote or transaction. The report is saved to `submission/evidence/production-check.json`. The manual **Production verification** GitHub workflow runs the same dependency-free check and retains its report for 14 days. This is a deployment smoke test, not continuous monitoring or funded E2E evidence.
-
-Read [the owner launch guide in Turkish](docs/owner-launch-guide-tr.md) for domain, credentials, passkey setup, funding, evidence and submission steps. The English [project description](submission/project-description.md) and [experiment plan](submission/agent-advantage-report.md) are drafts; they do not assert unmeasured outcomes.
-
-Run `npm run audit:services` to inspect a bounded, throttled sample of actual registry identities and negotiate read-only quotes by category. Results go to `submission/evidence/service-audit.json`. A rate-limited result is unconfirmed, not proof that a service is dead. Avoid repeated full scans on anonymous API quotas.
-
-Fill `submission/release.json` with real public URLs and completed-job references, then run `npm run check:release`. Its report is an engineering checklist, not a guarantee of eligibility, service quality, security or award selection. Missing evidence fails the check. The GitHub workflow runs type/lint/unit/build/dependency checks; live browser/provider checks remain separate because they depend on external services.
-
-Public-reference imports validate account/session binding and strip unknown fields. Funding history retains submitted and ambiguous transfers across modal closure; confirmed funding requires matching receipt sender, recipient, asset and amount. Pending relay submissions can be queried without another payment. Job actions use the onchain dispute window, and account permission reads support bounded pagination at a fixed block. Health now probes chain freshness and registry availability and returns 503 when degraded. These improvements do not replace actual funded E2E and independent review.
-
-## Focused catalogue and user docs
+## Catalogue and user documentation
 
 The default research marketplace uses a bounded operator-reviewed set of real BSC registry IDs from the service audit. Each is refreshed and checked for a supported live service and registered payment identity before being shown. `MARKETPLACE_AGENT_IDS` can replace this set (maximum 20). Failed checks temporarily exclude a provider and show a warning; signed quotes and completed delivery remain separate checks. Browse full registry (`catalog=registry`) reads 12 records per source page, exposes the source total and supports the first 10,008 offset-paginated matches. This bound follows the provider's documented shallow-pagination limit; direct identity lookup remains available.
 
