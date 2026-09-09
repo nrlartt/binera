@@ -1,14 +1,14 @@
 "use client";
 import { useState } from "react";
 import { categories, assets } from "@/lib/domain";
-import { taskSchema, taskText, type ResearchTask } from "@/lib/research-task";
+import { taskSchema, taskText, newTask, type ResearchTask } from "@/lib/research-task";
 import { api, ErrorNotice, SourceLink, dateLabel } from "./ui";
 
 export function ResearchTaskForm({ value, onChange, disabled = false }: { value: ResearchTask; onChange: (v: ResearchTask) => void; disabled?: boolean }) {
   const result = taskSchema.safeParse(value);
   const update = (key: keyof ResearchTask, val: string) => onChange({ ...value, [key]: val });
   return <fieldset className="task-form" disabled={disabled}><legend>Define your research task</legend><div className="form-grid">
-    <label>Category<select aria-label="Category" value={value.category} onChange={e => onChange({ ...value, category: e.target.value as ResearchTask["category"], target: "", lower: "", upper: "", levels: "" })}>{categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
+    <label>Category<select aria-label="Category" value={value.category} onChange={e => onChange({ ...value, category: e.target.value as ResearchTask["category"], goal: value.goal === newTask(value.category).goal ? newTask(e.target.value as ResearchTask["category"]).goal : value.goal, target: "", lower: "", upper: "", levels: "" })}>{categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
     <label>Asset<select aria-label="Asset" value={value.asset} onChange={e => update("asset", e.target.value)}>{assets.map(a => <option key={a}>{a}</option>)}</select></label>
     <label>Strategy budget (optional)<input inputMode="decimal" value={value.budget} onChange={e => update("budget", e.target.value)} /></label>
     <label>Research horizon<select aria-label="Research horizon" value={value.horizon} onChange={e => update("horizon", e.target.value)}>{["1 day", "7 days", "30 days", "90 days"].map(x => <option key={x}>{x}</option>)}</select></label>
