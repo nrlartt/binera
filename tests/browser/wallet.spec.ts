@@ -32,21 +32,23 @@ test("wallet discovery, explicit connection, account changes and disconnect", as
 test("no installed wallet keeps passkey onboarding available", async ({ page }) => {
   await page.goto("/"); await page.getByRole("button", { name: "Connect wallet", exact: true }).click();
   await expect(page.getByText("No browser wallet detected.", { exact: false })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Create a passkey account" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Create a passkey account" })).toBeDisabled();
+  await page.getByLabel("I want a separate empty account.").check();
+  await expect(page.getByRole("button", { name: "Create a passkey account" })).toBeEnabled();
 });
 
-test("saved passkey accounts survive reloads and new account creation is explicit", async ({ page }) => {
+test("saved passkey accounts restore after reload until explicitly disconnected", async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem("agentmarket-passkey-handle", JSON.stringify({
     address: "0x1111111111111111111111111111111111111111",
     credential: { kind: "webauthn", id: "test-credential_1", publicKey: `0x${"2".repeat(128)}`, rpId: location.hostname },
   })));
   await page.goto("/");
-  await page.getByRole("button", { name: "Unlock account", exact: true }).click();
+  await expect(page.locator(".wallet-button")).toContainText("0x1111");
+  await page.locator(".wallet-button").click();
   await expect(page.getByLabel("Saved marketplace account")).toHaveValue("test-credential_1");
   await expect(page.getByRole("button", { name: "Unlock saved account", exact: true })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Create a passkey account", exact: true })).toBeDisabled();
-  await page.getByLabel("I want a separate empty account.").check();
-  await expect(page.getByRole("button", { name: "Create a passkey account", exact: true })).toBeEnabled();
+  await expect(page.getByText("Your passkey is still required whenever an action needs a signature.", { exact: false })).toBeVisible();
+  await page.getByRole("button", { name: "Disconnect this device session", exact: true }).click();
   await page.reload();
   await expect(page.getByRole("button", { name: "Unlock account", exact: true })).toBeVisible();
 });

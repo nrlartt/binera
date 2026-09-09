@@ -3,7 +3,7 @@ import test from "node:test";
 import { classify, parseIntent, rankAgents, safeLink, type Agent } from "../src/lib/domain";
 import { normalizeScan, AgentRegistry, type AgentProvider } from "../src/lib/server/registry";
 import { publicIPv4, remoteJson, requestJson, sameOrigin } from "../src/lib/server/http";
-import { hiringPermissions } from "../src/lib/permissions";
+import { hiringBalanceIssue, hiringPermissions } from "../src/lib/permissions";
 
 const fixture = (id: string, overrides: Partial<Agent> = {}): Agent => ({ id, tokenId: "1", chainId: 56, name: "TEST FIXTURE", description: "USDT yield research", categories: ["yield"], assets: ["USDT"], protocols: ["Venus"], capabilities: ["yield"], owner: null, agentWallet: null, registered: true, verified: false, feedbackCount: 0, feedbackAverage: null, risk: "unknown", pricing: null, performance: null, active: true, endpoint: null, website: null, interfaces: [], source: "8004scan", sourceUrl: "https://8004scan.io", updatedAt: null, fetchedAt: "2026-09-08T00:00:00Z", registrationTx: null, ...overrides });
 test("all four user intents are classified", () => {
@@ -42,6 +42,12 @@ test("hiring permissions bound exact token budget, method selectors and expiry-p
   const policy = hiringPermissions(100n);
   assert.equal(policy.calls?.length, 5); assert.ok(policy.calls?.every(c => "to" in c && "signature" in c));
   assert.equal(policy.spend?.[0].limit, 100n); assert.equal(policy.spend?.[0].period, "day"); assert.throws(() => hiringPermissions(0n));
+});
+test("hiring balance check treats the BNB spend limit as a cap rather than a fixed fee", () => {
+  assert.equal(hiringBalanceIssue(1456662997953500n, 1868548515233161984n, 100000000000000000n), null);
+  assert.match(hiringBalanceIssue(1n, 50000000000000000n, 100000000000000000n) ?? "", /short by 0\.05 U/);
+  assert.match(hiringBalanceIssue(1n, null, 100000000000000000n) ?? "", /could not be verified/);
+  assert.match(hiringBalanceIssue(0n, 100000000000000000n, 100000000000000000n) ?? "", /not a fixed charge/);
 });
 test("write requests reject cross-origin, malformed JSON and oversized bodies", async () => {
   assert.throws(() => sameOrigin(new Request("https://market.example/api/quote", { headers: { origin: "https://attacker.example" } })));

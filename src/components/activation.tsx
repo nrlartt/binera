@@ -1,10 +1,10 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Check, Clock3, LockKeyhole, LoaderCircle, ShieldCheck, X } from "lucide-react";
-import { formatUnits, parseEther } from "viem";
+import { formatUnits } from "viem";
 import type { Agent } from "@/lib/domain";
 import type { SignedQuote } from "@/lib/quote";
-import { hiringPermissions, NETWORK_FEE_CAP, SESSION_SECONDS } from "@/lib/permissions";
+import { hiringBalanceIssue, hiringPermissions, NETWORK_FEE_CAP, SESSION_SECONDS } from "@/lib/permissions";
 import { matchesJob } from "@/lib/job-match";
 import { saveActivity, type ActivityRecord } from "@/lib/activity";
 import { useMarket } from "./shell";
@@ -40,7 +40,8 @@ export function Activation({ agent }: { agent: Agent }) {
       const sdk = await import("@altananetwork/sdk");
       const balances = await client.balances({ wallet, tokens: [quote.currency] });
       const tokenBalance = balances.tokens?.find(t => t.address.toLowerCase() === quote.currency.toLowerCase());
-      if (balances.native < parseEther(NETWORK_FEE_CAP) || !tokenBalance?.ok || tokenBalance.raw < BigInt(quote.price)) throw new Error(`Fund your marketplace account with at least ${formatUnits(BigInt(quote.price), 18)} U and ${NETWORK_FEE_CAP} BNB for the fee allowance, then try again. Actual fees may be lower.`);
+      const balanceIssue = hiringBalanceIssue(balances.native, tokenBalance?.ok ? tokenBalance.raw : null, BigInt(quote.price));
+      if (balanceIssue) throw new Error(balanceIssue);
       // Ensure browser can retain public revocation handles before granting a key.
       localStorage.setItem("agentmarket-storage-check", "ok"); localStorage.removeItem("agentmarket-storage-check");
       const sessionSigner = sdk.createPrivateKeySigner();
@@ -71,7 +72,7 @@ export function Activation({ agent }: { agent: Agent }) {
       await api(`/api/jobs/${result.jobId}/notify`, { method: "POST", body: JSON.stringify({ agentId: agent.id }) });
     } catch (e) {
       const text = e instanceof Error ? e.message : "";
-      const known = /Fund your marketplace|quote expired|network has not|permission remains/i.test(text);
+      const known = /marketplace account has|U balance could not|quote expired|network has not|permission remains/i.test(text);
       setError(known ? text : current ? "The next step could not be confirmed. Your request reference is saved in My agents. Check its onchain status before retrying; you can revoke access there." : "The request was not completed. Check your balance, approve the passkey request, and try again. No success has been assumed.");
     } finally { lock.current = false; setBusy(""); }
   }
