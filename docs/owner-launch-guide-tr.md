@@ -32,11 +32,15 @@ Kalıcı HTTPS domain'i belirlemeden production passkey hesabı oluşturma. Yay�
 
 Passkey'ler site origin'ine bağlıdır. Localhost'ta oluşturduğun hesabı production domain'inde aynı passkey ile açabileceğini varsayma.
 
+Bir Binera deploy'u passkey'i değiştirmez. Passkey işletim sistemi veya parola yöneticisinde, public hesap referansı ise aynı site origin'inin tarayıcı depolamasında bulunur. Uygulama artık bütün yerel hesap referanslarını saklar, eski tek-kayıt biçimini taşır ve yeni hesap açıldığında önceki kaydı ezmez. Sayfa yenilendiğinde **Unlock account** seç; yeni passkey oluşturma. **Export account references** dosyasını güvenli bir yerde tut. Bu dosyada özel anahtar yoktur fakat tek başına imza atamaz; passkey ayrıca cihazında kalmalıdır. Job export'u ayrı bir dosyadır.
+
+Eski bir passkey cihazda bulunuyor fakat public hesap referansı kaybolmuşsa **Use an existing passkey** iki ayrı passkey onayı ister. İki farklı challenge imzasından aynı P-256 açık anahtarını türetir, iki imzayla doğrular ve passkey içindeki 20-byte `userHandle` değerini hesap adresi olarak kullanır. Özel anahtar cihazdan çıkmaz. Bu yol, hesaba yalnızca fon gönderilmiş ve ilk Altana işlemi henüz yapılmamış olsa da yerel referansı yeniden kurmak içindir. İki istemde aynı passkey'i seç; adresi beklediğin hesapla karşılaştırmadan işlem yapma.
+
 1. Localhost'taki hesap adresini ve varsa public işlem kayıtlarını dışa aktar. Bakiyesi/aktif izni varsa onları o origin'de yönet; eski hesabı kaybolmuş gibi terk etme.
 2. Kalıcı HTTPS URL'sini aç. `Connect wallet` ile Rabby/MetaMask'i bağla; uygulama ağı algılar.
-3. `Create a passkey account` veya o production origin'inde mevcutsa `Use an existing passkey` kullan. Tarayıcının passkey penceresini sen onaylarsın.
+3. Kayıtlı hesap görünüyorsa `Unlock saved account`; görünmüyorsa `Use an existing passkey` kullan. `Create a passkey account` yalnızca ayrı ve boş yeni bir adres istediğinde kullanılmalıdır. Tarayıcının passkey penceresini sen onaylarsın.
 4. Bağlı dış cüzdan ile marketplace hesabının farklı adresler olduğunu kontrol et. Fonlama hedefi **marketplace hesabıdır**.
-5. `Resume an account saved on this device`, ilk zincir işleminden önce aynı tarayıcıda saklanan public passkey handle'ını kullanır. Tarayıcı verisini silmeden önce bunu dikkate al.
+5. Hesap seçicisinde adresi kontrol et ve public hesap referanslarını dışa aktar. Tarayıcı verisini silmeden önce yedeği al.
 
 ## 4. Küçük tutarlı gerçek fonlama
 
