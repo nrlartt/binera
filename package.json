@@ -14,6 +14,7 @@
     "test:e2e": "playwright test",
     "audit:services": "tsx scripts/service-audit.ts",
     "check:release": "tsx scripts/release-check.ts",
+    "prepare:evidence": "tsx scripts/prepare-evidence.ts",
     "check:production": "node scripts/production-check.mjs"
   },
   "dependencies": {

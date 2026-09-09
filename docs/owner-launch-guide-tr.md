@@ -77,7 +77,17 @@ Gerçek otomasyon kategorilerinde yeterli canlı sağlayıcı yoksa bu bir UI ek
 - category: `rebalancing`, `grid`, `yield` veya `health`.
 - jobId, wallet, provider, quote (export'taki tam signed description), price (en küçük U birimi).
 - fundingTx: gerçek ödeme işlemi.
-- outputUrl: gerçek teslimatın incelenebilir public kopyası veya kaynak URL'si.
+- outputUrl: teslimatın orijinal JSON manifest URL'si veya baytları birebir aynı HTTPS kopyası. Ekran görüntüsü, rapordan alınmış metin veya yeniden biçimlendirilmiş JSON hash kontrolünü geçmez.
+
+Alanları elle kopyalamamak için `My agents → Export public references` dosyasından tek bir işin taslağını oluşturabilirsin. Aşağıdaki `123` değerini kendi gerçek Job ID'nle, dosya yolunu indirdiğin export ile ve kategoriyi yaptığın işle değiştir:
+
+```powershell
+npm run prepare:evidence -- --input "$env:USERPROFILE\Downloads\binera-public-activity.json" --job 123 --category yield
+```
+
+Komut `submission/evidence/job-123.draft.json` oluşturur; var olan dosyayı veya manifesti ezmez. Cüzdan, satıcı, tam anlaşma, ücret ve fonlama referansını taşır. Tamamlanma durumu uydurmaz, kategori seçimini doğrulanmış hizmet diye sunmaz. Eksik ödeme referansı varsa önce Activity ekranında uzlaştırıp yeniden export al.
+
+Taslakta `outputUrl` boş kalır. My agents içindeki **Read verified deliverable → Original delivery manifest** bağlantısının URL'sini ekle, kategoriye uygun gerçek çıktıyı incele ve nesneyi `submission/release.json` içindeki `categoryEvidence` listesine koy. Bağlantı yalnızca hash doğrulandığında gösterilir. `npm run check:release` artık hesap/satıcı/ücret/anlaşma/Job ID, COMPLETED durumu, teslimat hash'i ve boş olmayan çıktı kontrolü yapar. Başarılı işlem makbuzunun gerçekten bu işin fonlaması olduğunun semantik incelemesi ve çıktı kalitesi hâlâ insan incelemesi gerektirir.
 
 Altana seçersen `sessionEvidence` içine wallet, grantTx, executionTx, revokeTx ve bunların gerçekten hangi yetkileri gösterdiğini anlatan explanationUrl ekle. `reviewedBy`, kanıtları inceleyen kişinin adıdır; otomatik doldurulmaz.
 

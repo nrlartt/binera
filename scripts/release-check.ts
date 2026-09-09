@@ -3,7 +3,7 @@ import { z } from "zod";
 import { getErc8183Job } from "@altananetwork/sdk";
 import { serverNetwork, publicClient } from "../src/lib/server/chain";
 import { remoteJson, remoteText } from "../src/lib/server/http";
-import { matchesJob } from "../src/lib/job-match";
+import { assertPaidDelivery } from "../src/lib/release-evidence";
 
 const evidenceSchema = z.object({ category: z.enum(["rebalancing", "grid", "yield", "health"]), jobId: z.string().regex(/^\d{1,15}$/), wallet: z.string().regex(/^0x[0-9a-f]{40}$/i), provider: z.string().regex(/^0x[0-9a-f]{40}$/i), quote: z.string().min(1), price: z.string().regex(/^\d{1,78}$/), fundingTx: z.string().regex(/^0x[0-9a-f]{64}$/i), outputUrl: z.url() });
 const manifestSchema = z.object({ publicUrl: z.string(), repositoryUrl: z.string(), videoUrl: z.string(), tracks: z.array(z.enum(["main", "altana", "termix", "pancake"])), categoryEvidence: z.array(evidenceSchema), sessionEvidence: z.array(z.object({ wallet: z.string(), grantTx: z.string(), executionTx: z.string(), revokeTx: z.string(), explanationUrl: z.url() })), advantageReportUrl: z.string(), pancakeEvidenceUrl: z.string(), reviewedBy: z.string() });
@@ -24,11 +24,11 @@ try {
   for (const category of ["rebalancing", "grid", "yield", "health"]) await check(`${category} paid delivery`, async () => {
     const e = m.categoryEvidence.find(e => e.category === category); if (!e) throw new Error("Completed job evidence is missing.");
     const job = await getErc8183Job(serverNetwork, BigInt(e.jobId));
-    if (!matchesJob({ ...job, budget: job.budget.toString() }, e) || job.statusName !== "COMPLETED" || job.submittedAt === 0n) throw new Error("Onchain job does not match a completed, delivered task.");
     const receipt = await publicClient.getTransactionReceipt({ hash: e.fundingTx as `0x${string}` });
     if (receipt.status !== "success") throw new Error("The supplied funding receipt is not successful.");
-    https(e.outputUrl); await remoteText(e.outputUrl);
-    return `Completed job ${e.jobId} and successful receipt checked. Reviewer must verify the receipt belongs to this job and the output proves the claimed category service.`;
+    https(e.outputUrl); const manifestText = await remoteText(e.outputUrl);
+    assertPaidDelivery(job, e, manifestText);
+    return `Completed job ${e.jobId}, committed output hash and successful receipt checked. Reviewer must verify the receipt belongs to this job and the output proves the claimed category service.`;
   });
   if (m.tracks.includes("altana")) await check("Altana session evidence", async () => {
     if (!m.sessionEvidence.length) throw new Error("Grant, scoped execution and revoke evidence is missing.");

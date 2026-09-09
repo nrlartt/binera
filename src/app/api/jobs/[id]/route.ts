@@ -13,19 +13,21 @@ export async function GET(request: Request, ctx: { params: Promise<{ id: string 
     ]);
     const actions = jobActions(job, block.timestamp, BigInt(windowSeconds));
     const disputeDeadline = job.submittedAt > 0n ? (job.submittedAt + BigInt(windowSeconds)).toString() : null;
-    let deliverable: string | null = null; let deliverableStatus = "Not submitted";
+    let deliverable: string | null = null; let deliverableUrl: string | null = null; let deliverableStatus = "Not submitted";
     if (job.submittedAt > 0n && new URL(request.url).searchParams.get("deliverable") === "true") {
       try {
-        deliverable = await cached(`deliverable-${id}-${job.deliverable}`, async () => {
+        const verified = await cached(`deliverable-${id}-${job.deliverable}`, async () => {
           const url = await getErc8183DeliverableUrl(serverNetwork, BigInt(id));
           if (!url) throw new Error("unavailable");
           const text = await remoteText(url);
           if (!verifyErc8183ManifestText(text, job.deliverable)) throw new Error("integrity");
-          return z.object({ response: z.object({ content: z.string() }) }).parse(JSON.parse(text)).response.content;
+          const content = z.object({ response: z.object({ content: z.string().trim().min(1) }) }).parse(JSON.parse(text)).response.content;
+          return { content, url };
         }, 300000);
+        deliverable = verified.content; deliverableUrl = verified.url;
         deliverableStatus = "Hash verified against the onchain commitment";
       } catch { deliverableStatus = "Unable to retrieve or verify this deliverable. Do not approve it yet."; }
     }
-    return Response.json(JSON.parse(JSON.stringify({ ...job, actions, disputeDeadline, observedBlock: block.number.toString(), deliverableContent: deliverable, deliverableStatus, observedAt: new Date().toISOString() }, (_, v) => typeof v === "bigint" ? v.toString() : v)));
+    return Response.json(JSON.parse(JSON.stringify({ ...job, actions, disputeDeadline, observedBlock: block.number.toString(), deliverableContent: deliverable, deliverableUrl, deliverableStatus, observedAt: new Date().toISOString() }, (_, v) => typeof v === "bigint" ? v.toString() : v)));
   } catch (e) { return errorResponse(e); }
 }
