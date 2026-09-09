@@ -45,7 +45,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
         if (!assertion || assertion.id !== saved.credential.id) throw new Error("Passkey not selected");
         w = { address: saved.address, signer: sdk.signerFromPasskey(saved.credential) };
       } else {
-        const created = mode === "create" ? await c.createPasskeyWallet({ name: "AgentMarket", rpId: location.hostname }) : await c.recoverFromPasskey({ rpId: location.hostname });
+        const created = mode === "create" ? await c.createPasskeyWallet({ name: "Binera Agent Market", rpId: location.hostname }) : await c.recoverFromPasskey({ rpId: location.hostname });
         w = created;
         // Public credential handle only, essential for recovery before the first onchain transaction.
         if (created.signer.credential.kind === "webauthn") localStorage.setItem("agentmarket-passkey-handle", JSON.stringify({ address: created.address, credential: { ...created.signer.credential, rpId: location.hostname } }));
@@ -56,7 +56,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
   return <MarketContext.Provider value={{ compared, toggleCompare, clearCompare: () => updateCompare([]), wallet, client, openWallet: () => setWalletOpen(true) }}>
     <a className="skip-link" href="#main">Skip to content</a>
     <aside className={`sidebar ${mobile ? "mobile-open" : ""}`}>
-      <Link href="/" className="brand" onClick={() => setMobile(false)}><span className="brand-symbol"><Layers3 size={23} /></span>agentmarket<span className="brand-dot">.</span></Link>
+      <Link href="/" className="brand" aria-label="Binera Agent Market home" onClick={() => setMobile(false)}><span className="brand-symbol"><Layers3 size={23} /></span>Binera<span className="brand-dot">.</span></Link>
       <div className="sidebar-label">YOUR NEXT ADVANTAGE</div>
       <nav aria-label="Main navigation">
         <Link className={`nav-item ${path === "/" ? "active" : ""}`} href="/" onClick={() => setMobile(false)}><Compass size={19} />Discover<span className="nav-arrow">↗</span></Link>
@@ -68,7 +68,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
       <div className="sidebar-bottom"><div className="sidebar-note"><ShieldCheck size={23} /><strong>Your goals. Your control.</strong><p>Review the evidence.<br />Choose what an agent can do.</p><Link href="/dashboard">Manage permissions <ArrowUpRight size={14} /></Link></div><div className="chain-label"><span className="chain-diamond">◆</span>BNB Smart Chain<span className="network-dot" /></div></div>
     </aside>
     <div className="workspace"><header className="topbar"><button aria-label={mobile ? "Close navigation" : "Open navigation"} className="icon-button mobile-menu" onClick={() => setMobile(!mobile)}>{mobile ? <X size={20} /> : <Menu size={20} />}</button><div className="breadcrumb">Marketplace<span>/</span><strong>{path === "/dashboard" ? "My agents" : path === "/compare" ? "Comparison" : path.startsWith("/agents/") ? "Agent overview" : "Discover"}</strong></div><div className="topbar-right"><span className="noncustodial"><ShieldCheck size={14} />You stay in control</span><button className="button wallet-button" onClick={() => setWalletOpen(true)}><Wallet size={16} />{browser.connection ? shortAddress(browser.connection.address) : wallet ? shortAddress(wallet.address) : "Connect wallet"}</button></div></header>
-      <main id="main">{children}</main><footer className="footer"><span>© {new Date().getFullYear()} AgentMarket</span><span>Real agents. Evidence before action.</span><span><Leaf size={13} /> Built on BNB Chain</span></footer>
+      <main id="main">{children}</main><footer className="footer"><span>© {new Date().getFullYear()} Binera Agent Market</span><span>Real agents. Evidence before action.</span><span><Leaf size={13} /> Built on BNB Chain</span></footer>
     </div>
     {compared.length > 0 && path !== "/compare" && <div className="compare-dock"><Columns3 size={20} /><span><strong>{compared.length} {compared.length === 1 ? "agent" : "agents"}</strong> selected</span><button className="text-button" onClick={() => updateCompare([])}>Clear</button><Link className="button primary" href={compared.length < 2 ? `/category/${compared[0].categories[0]}` : "/compare"}>{compared.length < 2 ? "Choose a second agent" : "Compare agents"} <ArrowUpRight size={16} /></Link></div>}
     {compareError && <div role="alert" className="toast">{compareError}<button className="icon-button" aria-label="Dismiss" onClick={() => setCompareError("")}><X size={15} /></button></div>}

@@ -14,7 +14,7 @@ export function termixSecurity(tokenAddress: string) {
     if (!endpoint && !command) throw new PublicError("Token security research is not connected yet. This does not establish that a token is safe.", 503);
     if (endpoint && !endpoint.startsWith("https://")) throw new PublicError("The token research service needs a secure connection.", 503);
     const transport = endpoint ? new StreamableHTTPClientTransport(new URL(endpoint), { requestInit: { headers: process.env.TERMIX_MCP_TOKEN ? { Authorization: `Bearer ${process.env.TERMIX_MCP_TOKEN}` } : {} } }) : new StdioClientTransport({ command: command!, args: JSON.parse(process.env.TERMIX_ARGS || "[]"), stderr: "ignore" });
-    const client = new Client({ name: "agentmarket-token-research", version: "1.0.0" });
+    const client = new Client({ name: "binera-token-research", version: "1.0.0" });
     try {
       await Promise.race([client.connect(transport), new Promise<never>((_, reject) => { const timer = setTimeout(() => reject(new PublicError("Token research timed out.")), 10000); timer.unref(); })]);
       const tools = await client.listTools({}, { timeout: 10000 });

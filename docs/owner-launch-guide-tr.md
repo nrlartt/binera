@@ -10,22 +10,13 @@ Hazırlayacağın kişisel bilgiler: ekip/solo tercihi, isim ve roller, e-posta,
 
 ## 2. GitHub ve yayın erişimi
 
-Önce proje için GitHub'da bir repo oluştur veya mevcut URL'yi paylaş. Kendi bilgisayarındaki terminalde Vercel'i bağla:
+Proje adı **Binera**, site başlığı **Binera Agent Market**. Kullanılacak kaynak repo: [nrlartt/binera](https://github.com/nrlartt/binera). Yerel Git `origin` bağlantısı bu adrese ayarlandı.
 
-```powershell
-Set-Location 'C:\Users\user\Desktop\agentmarket'
-npx vercel login
-```
+Yayın platformu Railway. [Railway kurulum rehberindeki](railway-deploy-tr.md) komutlarla hesabını bağla, yeni proje oluştur veya mevcut projeyi seç, değişkenleri tanımla ve HTTPS domain üret. CLI ile bu klasörü doğrudan yayınlayabilirsin; GitHub bağlantısı ilk deploy için zorunlu değildir. Başvuruda kaynak kod bağlantısı için GitHub reposunu ayrıca oluşturup push et.
 
-CLI'nin açtığı doğrulamayı kendi hesabında tamamla. Ardından repo URL'sini, kalıcı domain'i ve hangi Vercel projesine yayınlanacağını belirt. Deploy erişimi geldikten sonra otomatik olarak yapılabilecek işlem:
+Gerçek anahtarlar Railway servisinin **Variables** ekranında saklanır. `NEXT_PUBLIC_` ile gizli değer ekleme. Mevcut minimum uygulama OpenAI veya TermiX olmadan çalışır. 8004scan yoğun kullanımı için `SCAN_API_KEY`, güvenilir RPC için `BSC_RPC_URL` tanımlanması önerilir. TermiX MCP, ilgili ödüle katılmanın zorunlu entegrasyonu değildir.
 
-```powershell
-npx vercel --prod
-```
-
-CLI'nin team/project sorularında bu ürünün projesini seç. Şirketindeki başka projeyi yanlışlıkla üzerine yazma. Domain henüz yoksa tek bir sabit `proje.vercel.app` adresi başlangıç için kullanılabilir; sürekli değişen preview URL'sinde production hesabı oluşturma.
-
-`NEXT_PUBLIC_` ile gizli değer ekleme. `.env.example` rehberdir; gerçek anahtarlar Vercel Environment Variables altında saklanır. Mevcut minimum uygulama OpenAI veya TermiX olmadan çalışır. 8004scan yoğun kullanımı için `SCAN_API_KEY`, güvenilir RPC için `BSC_RPC_URL` tanımlanması önerilir. TermiX MCP, ilgili ödüle katılmanın zorunlu entegrasyonu değildir.
+Kalıcı HTTPS domain'i belirlemeden production passkey hesabı oluşturma. Yayından sonra URL'yi `submission/release.json` içine kaydet.
 
 ## 3. Production passkey hesabı
 
@@ -98,4 +89,4 @@ Son teslimde: URL, repo/sürüm, doğru ürün açıklaması, kısa gerçek ekra
 
 ## 8. Değerlendirme boyunca çalışma
 
-Public `/api/health` gerçek RPC/registry sağlığını kontrol eder, sorun varsa 503 döner. Bir uptime servisinde bu URL'yi 2–5 dakika arayla izle; alarm alıcısını sen belirle. Vercel WAF/rate limit ve provider kotalarını deployment hesabında ayarla. Process içi limit birden çok instance için ortak kota değildir. Domain/RPC/API anahtarı değiştirildiğinde yeniden smoke test yap. Rollback için son test edilmiş commit/deployment'ı sakla.
+Public `/api/health` gerçek RPC/registry sağlığını kontrol eder, sorun varsa 503 döner. Bir uptime servisinde bu URL'yi 2–5 dakika arayla izle; alarm alıcısını sen belirle. Railway kullanım bütçesini, provider kotalarını ve ingress/WAF rate limitini ayarla. Process içi limit birden çok instance için ortak kota değildir. Domain/RPC/API anahtarı değiştirildiğinde yeniden smoke test yap. Rollback için son test edilmiş commit/deployment'ı sakla.

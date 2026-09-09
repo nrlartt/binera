@@ -17,7 +17,7 @@ export async function remoteText(url: string, options: { body?: unknown; headers
   if (!records.length || records.some(r => !publicIPv4(r.address))) throw new PublicError("This provider endpoint is not publicly accessible.");
   return new Promise((resolve, reject) => {
     const body = options.body === undefined ? undefined : JSON.stringify(options.body);
-    const req = request(u, { method: body ? "POST" : "GET", headers: { Accept: "application/json", "User-Agent": "AgentMarket/1.0", ...options.headers, ...(body ? { "Content-Type": "application/json", "Content-Length": Buffer.byteLength(body).toString() } : {}) },
+    const req = request(u, { method: body ? "POST" : "GET", headers: { Accept: "application/json", "User-Agent": "Binera/1.0", ...options.headers, ...(body ? { "Content-Type": "application/json", "Content-Length": Buffer.byteLength(body).toString() } : {}) },
       family: 4,
       lookup: (_hostname, _options, callback) => callback(null, records[0].address, 4),
     }, res => {

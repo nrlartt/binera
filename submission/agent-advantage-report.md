@@ -2,7 +2,7 @@
 
 Status: NOT RUN. Do not submit this plan as measured advantage.
 
-Run each task using an agent hired through AgentMarket and independently without an agent, with the same input data/time window. Preserve full prompts, timestamps, outputs, sources, job IDs and receipts. Report unsuccessful runs as well as successes. Define quality criteria before seeing either output.
+Run each task using an agent hired through Binera Agent Market and independently without an agent, with the same input data/time window. Preserve full prompts, timestamps, outputs, sources, job IDs and receipts. Report unsuccessful runs as well as successes. Define quality criteria before seeing either output.
 
 | Task | Suggested scope | Agent ID / job | Agent elapsed time / cost | Baseline elapsed time / cost | Quality rubric / scores | Actual output links |
 | --- | --- | --- | --- | --- | --- | --- |

@@ -1,4 +1,6 @@
-# AgentMarket
+# Binera Agent Market
+
+Source repository: [nrlartt/binera](https://github.com/nrlartt/binera)
 
 A marketplace for discovering, evaluating, comparing and hiring real BNB Chain agents. The product is the marketplace; agent runtimes sit underneath it.
 
@@ -57,20 +59,15 @@ The requested low-risk USDT journey currently returns related agents with missin
 
 ## Deployment
 
-Next.js can deploy to Vercel without a custom adapter:
+Deploy to Railway using the included `railway.json` and Dockerfile. Follow [the Railway deployment guide](docs/railway-deploy-tr.md) for login, project linking, runtime variables and HTTPS domain commands. Railway runs `node server.js`, checks `/` for startup and restarts failed processes. Monitor `/api/health` separately for live dependency health.
 
-```sh
-vercel login
-vercel --prod
-```
-
-The Vercel CLI session on the development machine was invalid when inspected. No public deployment is claimed until a successful deploy and URL verification are recorded. Passkeys are origin-bound; use a stable HTTPS domain before creating a production account.
+No public deployment is claimed until a successful deploy and URL verification are recorded. Passkeys are origin-bound; use a stable HTTPS domain before creating a production account.
 
 Or deploy the included container:
 
 ```sh
-docker build -t agentmarket .
-docker run --rm -p 3000:3000 --env-file .env.local agentmarket
+docker build -t binera .
+docker run --rm -p 3000:3000 --env-file .env.local binera
 ```
 
 Keep `.env.local` outside the image. It is excluded from Docker build context. Server secrets are never used at build time. In a container, inject only required keys and deploy it behind HTTPS.
