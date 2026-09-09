@@ -45,6 +45,7 @@ test("saved passkey accounts restore after reload until explicitly disconnected"
   await page.goto("/");
   await expect(page.locator(".wallet-button")).toContainText("0x1111");
   await page.locator(".wallet-button").click();
+  await page.getByText("Saved accounts & recovery", { exact: true }).click();
   await expect(page.getByLabel("Saved marketplace account")).toHaveValue("test-credential_1");
   await expect(page.getByRole("button", { name: "Unlock saved account", exact: true })).toBeVisible();
   await expect(page.getByText("Your passkey is still required whenever an action needs a signature.", { exact: false })).toBeVisible();

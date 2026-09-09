@@ -50,7 +50,8 @@ export function sameOrigin(request: Request) {
   // A TLS-terminating proxy can expose an internal HTTP URL to Next.js.
   // Trust only operator configuration, never caller-supplied forwarded headers.
   const expected = new URL(process.env.APP_ORIGIN || request.url).origin;
-  if (origin && origin !== expected) throw new PublicError("Please submit this request from the marketplace.", 403);
+  const allowed = (process.env.APP_ADDITIONAL_ORIGINS || "").split(",").filter(Boolean).map(value => new URL(value.trim()).origin);
+  if (origin && origin !== expected && !allowed.includes(origin)) throw new PublicError("Please submit this request from the marketplace.", 403);
 }
 export async function requestJson(request: Request): Promise<unknown> {
   const reader = request.body?.getReader(); if (!reader) throw new PublicError("A request body is required.", 400);
