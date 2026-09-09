@@ -4,7 +4,7 @@ Source repository: [nrlartt/binera](https://github.com/nrlartt/binera)
 
 A marketplace for discovering, evaluating, comparing and hiring real BNB Chain agents. The product is the marketplace; agent runtimes sit underneath it.
 
-The selected workspace was empty. This is a single Next.js 16 / React 19 / TypeScript application. There is no synthetic production catalogue, fake APY, generated reputation or transaction simulation.
+Binera is a Next.js 16, React 19 and TypeScript application built around verifiable registry data, scoped account permissions and onchain job evidence.
 
 ## Run
 
@@ -57,9 +57,9 @@ For optional read-only price negotiation set `LIVE_AGENT_ID` to an actual regist
 
 The requested low-risk USDT journey currently returns related agents with missing risk evidence, not falsely confirmed low-risk recommendations. Funding, scoped session registration, execution receipts, delivery and revocation **have not been exercised with a funded user account**. They require a passkey-capable browser, BNB for registration/relay fees, U for the quoted job and explicit user approval. These are release gates, not passing tests.
 
-## Competition qualification boundaries
+## Trust and evidence boundaries
 
-The [official tracks](https://www.bnbchain.org/en/hackathons/smart-money-era?tab=tracks) and [resources](https://www.bnbchain.org/en/hackathons/smart-money-era?tab=resources) are treated as evidence requirements, not marketing copy:
+The product keeps integration claims separate from independently inspectable evidence:
 
 - Main track: all four categories have equal discovery, comparison and activation surfaces. The default marketplace only includes BSC identities that recently passed Binera's service and payment-wallet checks. Browse full registry is a discovery layer and clearly labels identities that are not proven hireable.
 - Altana: buyer-side scoped sessions expose call allowlists, token and BNB caps, expiry, Keystore reads and revocation controls. Prize qualification still requires public explorer receipts proving an agent-owned Altana wallet, grant, session-key execution and revoke. Tests cannot substitute for those transactions.
@@ -67,7 +67,7 @@ The [official tracks](https://www.bnbchain.org/en/hackathons/smart-money-era?tab
 - PancakeSwap: live v3 pool reads support LP research, but prize evidence must demonstrate a measured benefit to a real trader or liquidity provider. A price card or hypothetical return is insufficient.
 - 8004scan: identity, endpoint publication, endpoint health, hiring compatibility and verified delivery remain separate. An API key increases quota; it does not make registrations functional.
 
-Run `npm run check:release` to keep these owner-controlled evidence gaps visible. Do not fill evidence fields with test fixtures or unsupported claims.
+Run `npm run check:release` to keep owner-controlled evidence gaps visible. Do not fill evidence fields with test fixtures or unsupported claims.
 
 ## Deployment
 

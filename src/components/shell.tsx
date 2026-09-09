@@ -119,7 +119,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
     if (!file) return;
     try { if (file.size > 1000000) throw new Error(); const accounts = savePasskeyAccounts(localStorage, JSON.parse(await file.text()), location.hostname); setSavedAccounts(accounts); setSelectedAccount(accounts[0]?.credential.id || ""); setError(""); } catch { setError("This account-reference backup is invalid, conflicts with saved references, or belongs to a different domain. Existing records were not replaced."); }
   }
-  const locationNote = <p className="account-domain-note">Previously used Binera on Railway? <a href="https://binera-production.up.railway.app/dashboard">Open your original account</a>. Passkeys are tied to the domain where they were created.</p>;
+  const locationNote = null;
   return <MarketContext.Provider value={{ compared, toggleCompare, clearCompare: () => updateCompare([]), replaceCompared: updateCompare, wallet, client, openWallet: () => setWalletOpen(true) }}>
     <a className="skip-link" href="#main">Skip to content</a>
     <aside className={`sidebar ${mobile ? "mobile-open" : ""}`}>
