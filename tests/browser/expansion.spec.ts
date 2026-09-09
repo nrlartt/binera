@@ -1,5 +1,20 @@
 import { test, expect } from "@playwright/test";
 
+test("payment help identifies the exact mainnet token and registry totals remain separate", async ({ page, request }) => {
+  await page.goto("/docs");
+  await page.getByText("How to get U for agent fees", { exact: true }).click();
+  await expect(page.locator(".payment-help")).toContainText("0xcE24439F2D9C6a2289F741120FE202248B666666");
+  await expect(page.getByRole("link", { name: "Binance U/USDT", exact: true })).toHaveAttribute("href", "https://www.binance.com/en/trade/U_USDT");
+  const response = await request.get("/api/registry/stats");
+  expect(response.status()).toBe(200);
+  const stats = await response.json();
+  expect(stats.registered).toBeGreaterThanOrEqual(stats.publishedA2A);
+  expect(stats.note).toContain("do not prove service availability");
+  await page.goto("/?catalog=registry");
+  await page.getByText("How much of the registry am I seeing?", { exact: true }).click();
+  await expect(page.getByRole("link", { name: "Explore the source registry", exact: true })).toBeVisible({ timeout: 30000 });
+});
+
 test("research catalogue is distinct from the registry and docs are public", async ({ page, request }) => {
   const response = await request.get("/api/discover"); const data = await response.json();
   expect(response.status()).toBe(200); expect(data.total).toBeLessThanOrEqual(4);

@@ -6,6 +6,7 @@ import { categories, assets, protocols, type Category, type Intent, type RankedA
 import { useMarket } from "./shell";
 import { api, CategoryIcon, dateLabel, ErrorNotice, TrustBadge } from "./ui";
 import { SaveAgent } from "./profile";
+import { RegistryCoverage } from "./registry-coverage";
 import { MarketContext } from "./market-context";
 type Discovery = { agents: RankedAgent[]; total: number; compatible: number; counts: Record<Category, number>; warnings: string[]; fetchedAt: string; pages: number; scope: string; intent: Intent };
 export function AgentCard({ agent, category }: { agent: RankedAgent; category?: Category }) {
@@ -45,7 +46,7 @@ export function Marketplace({ category }: { category?: Category }) {
       {loading ? <div className="agent-grid" aria-label="Loading agents" aria-busy="true">{Array.from({ length: 6 }, (_, i) => <div key={i} className="agent-skeleton"><div /><div /><div /><div /></div>)}</div> : data?.agents.length ? <div className="agent-grid">{data.agents.map(agent => <AgentCard key={agent.id} agent={agent} category={category} />)}</div> : <div className="empty"><Search size={32} /><h3>{error ? "Discovery is temporarily unavailable" : "A more specific search deserves more evidence."}</h3><p>{error ? "Refresh to reconnect to the live registry." : "No registered agents match these filters in the current discovery window. Try another category or remove a filter."}</p><button className="button" onClick={() => { setAsset(""); setProtocol(""); setRisk(""); setVerified(false); search(""); }}>Reset search</button></div>}
       {data && !loading && <div className="results-footer"><span>Source: 8004scan · Retrieved {dateLabel(data.fetchedAt)}<small>{data.scope}</small></span><div className="pagination"><button className="icon-button" aria-label="Previous page" disabled={page <= 1} onClick={() => { setLoading(true); setPage(p => p - 1); }}><ChevronLeft size={17} /></button><span>{page} / {Math.max(1, data.pages)}</span><button className="icon-button" aria-label="Next page" disabled={page >= data.pages} onClick={() => { setLoading(true); setPage(p => p + 1); }}><ChevronRight size={17} /></button></div></div>}
     </section>
-    <MarketContext />
+    {catalog === "registry" && <RegistryCoverage />}<MarketContext />
     <section className="trust-strip"><ShieldCheck size={26} /><div><h3>Good decisions start with clear information.</h3><p>Identity, publisher claims and investment risk are different things. We keep them separate.</p></div><Link href="/compare">Compare the evidence <Columns3 size={16} /></Link></section>
   </div>;
 }

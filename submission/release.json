@@ -3,7 +3,10 @@
   "repositoryUrl": "https://github.com/nrlartt/binera",
   "videoUrl": "",
   "tracks": [
-    "main"
+    "main",
+    "altana",
+    "termix",
+    "pancake"
   ],
   "categoryEvidence": [],
   "sessionEvidence": [],

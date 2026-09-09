@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-09-09T08:08:17.131Z",
+  "checkedAt": "2026-09-09T08:45:35.932Z",
   "automatedChecksPass": false,
   "notice": "This checklist is not an organizer eligibility decision or a security audit. Inspect service quality, receipt-to-job links, key scopes and manual review evidence.",
   "checks": [
@@ -32,6 +32,21 @@
       "name": "health paid delivery",
       "passed": false,
       "detail": "Completed job evidence is missing."
+    },
+    {
+      "name": "Altana session evidence",
+      "passed": false,
+      "detail": "Grant, scoped execution and revoke evidence is missing."
+    },
+    {
+      "name": "Agent Advantage Report",
+      "passed": false,
+      "detail": "Invalid URL"
+    },
+    {
+      "name": "PancakeSwap benefit",
+      "passed": false,
+      "detail": "Invalid URL"
     },
     {
       "name": "Human evidence review",
