@@ -7,7 +7,7 @@ import { api, ErrorNotice, SourceLink, dateLabel } from "./ui";
 export function ResearchTaskForm({ value, onChange, disabled = false }: { value: ResearchTask; onChange: (v: ResearchTask) => void; disabled?: boolean }) {
   const result = taskSchema.safeParse(value);
   const update = (key: keyof ResearchTask, val: string) => onChange({ ...value, [key]: val });
-  return <fieldset className="task-form" disabled={disabled}><legend>Define your research task</legend><div className="form-grid">
+  return <fieldset className="task-form" disabled={disabled}><legend>What do you need?</legend><label className="span-two">Research goal<textarea rows={3} maxLength={500} value={value.goal} onChange={e => update("goal", e.target.value)} /></label><details><summary>Customize research (optional)</summary><div className="form-grid">
     <label>Category<select aria-label="Category" value={value.category} onChange={e => onChange({ ...value, category: e.target.value as ResearchTask["category"], goal: value.goal === newTask(value.category).goal ? newTask(e.target.value as ResearchTask["category"]).goal : value.goal, target: "", lower: "", upper: "", levels: "" })}>{categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
     <label>Asset<select aria-label="Asset" value={value.asset} onChange={e => update("asset", e.target.value)}>{assets.map(a => <option key={a}>{a}</option>)}</select></label>
     <label>Strategy budget (optional)<input inputMode="decimal" value={value.budget} onChange={e => update("budget", e.target.value)} /></label>
@@ -15,8 +15,8 @@ export function ResearchTaskForm({ value, onChange, disabled = false }: { value:
     <label className="span-two">{value.category === "health" ? "Venus Core account address (optional)" : "PancakeSwap v3 pool address (optional)"}<input value={value.target} maxLength={42} placeholder="0x…" onChange={e => update("target", e.target.value)} /></label>
     {value.category !== "yield" && <><label>{value.category === "health" ? "Alert health threshold (research)" : "Lower price (token1 per token0)"}<input inputMode="decimal" value={value.lower} onChange={e => update("lower", e.target.value)} /></label><label>{value.category === "health" ? "Target health threshold (research)" : "Upper price (token1 per token0)"}<input inputMode="decimal" value={value.upper} onChange={e => update("upper", e.target.value)} /></label></>}
     {value.category === "grid" && <label>Grid levels (2–100)<input inputMode="numeric" value={value.levels} onChange={e => update("levels", e.target.value)} /></label>}
-    <label className="span-two">Research goal<textarea rows={3} maxLength={500} value={value.goal} onChange={e => update("goal", e.target.value)} /></label>
-  </div><small>Strategy capital stays in your wallet. Research inputs do not create orders, monitoring or automated protection. Review task privacy before requesting a quote.</small>{!result.success && <ErrorNotice message={result.error.issues[0].message} />}<details><summary>Review the exact task sent to sellers</summary><pre className="task-text">{result.success ? taskText(value) : "Complete valid task inputs first."}</pre></details></fieldset>;
+
+  </div></details><small>Strategy capital stays in your wallet. Research inputs do not create orders, monitoring or automated protection. Review task privacy before requesting a quote.</small>{!result.success && <ErrorNotice message={result.error.issues[0].message} />}<details><summary>Review the exact task sent to sellers</summary><pre className="task-text">{result.success ? taskText(value) : "Complete valid task inputs first."}</pre></details></fieldset>;
 }
 type Preview = { title: string; facts: Record<string, string>; block: string; observedAt: string; source: string; note: string };
 export function ResearchPreview({ task }: { task: ResearchTask }) {

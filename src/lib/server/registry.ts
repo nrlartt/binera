@@ -52,6 +52,6 @@ export function getAgent(id: string): Promise<Agent> {
   return cached(`detail-${id}`, async () => {
     const match = id.match(/^scan-(56)-(\d{1,20})$/);
     if (!match) { const a = (await registry.discover()).agents.find(a => a.id === id); if (a) return a; throw new PublicError("This agent could not be found.", 404); }
-    return normalizeScan(await remoteJson(`${scanBase}/agents/${match[1]}/${match[2]}`, { headers: headers() }));
+    try { return normalizeScan(await remoteJson(`${scanBase}/agents/${match[1]}/${match[2]}`, { headers: headers() })); } catch { throw new PublicError("The registry could not load this agent. The record may be unavailable or the registry may be busy. Return to the research marketplace or retry shortly.", 503); }
   });
 }

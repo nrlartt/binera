@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
-import { Bookmark, UserRound, Compass, Layers3, Columns3, ArrowUpRight, Menu, X, Wallet, LoaderCircle, Leaf, ShieldCheck } from "lucide-react";
+import { Bookmark, UserRound, BookOpen, Compass, Layers3, Columns3, ArrowUpRight, Menu, X, Wallet, LoaderCircle, Leaf, ShieldCheck } from "lucide-react";
 import type { Client, CreateWalletResult } from "@altananetwork/sdk";
 import { categories, type Agent } from "@/lib/domain";
 import { CategoryIcon, CopyAddress, ErrorNotice, shortAddress } from "./ui";
@@ -63,7 +63,8 @@ export function Shell({ children }: { children: React.ReactNode }) {
         <Link className={`nav-item ${path === "/dashboard" ? "active" : ""}`} href="/dashboard" onClick={() => setMobile(false)}><Layers3 size={19} />My agents</Link>
         <Link className={`nav-item ${path === "/compare" ? "active" : ""}`} href="/compare" onClick={() => setMobile(false)}><Columns3 size={19} />Compare{compared.length > 0 && <span className="count">{compared.length}</span>}</Link>
         <Link className={`nav-item ${path === "/saved" ? "active" : ""}`} href="/saved" onClick={() => setMobile(false)}><Bookmark size={19} />Saved agents</Link>
-        <Link className={`nav-item ${path === "/profile" ? "active" : ""}`} href="/profile" onClick={() => setMobile(false)}><UserRound size={19} />Profile</Link>
+        {wallet && <Link className={`nav-item ${path === "/profile" ? "active" : ""}`} href="/profile" onClick={() => setMobile(false)}><UserRound size={19} />Profile</Link>}
+        <Link className={`nav-item ${path === "/docs" ? "active" : ""}`} href="/docs" onClick={() => setMobile(false)}><BookOpen size={19} />Docs</Link>
       </nav>
       <div className="sidebar-label category-label">EXPLORE CATEGORIES</div>
       <nav aria-label="Agent categories">{categories.map(c => <Link className={`nav-item category-nav ${path === `/category/${c.id}` ? "active" : ""}`} key={c.id} href={`/category/${c.id}`} onClick={() => setMobile(false)}><CategoryIcon category={c.id} size={18} />{c.id === "health" ? "Health monitoring" : c.name}</Link>)}</nav>

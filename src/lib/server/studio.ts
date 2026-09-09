@@ -11,7 +11,7 @@ const cardSchema = z.object({ name: z.string(), url: z.url(), skills: z.array(z.
 export async function studioCard(id: string) {
   const agent = await getAgent(id);
   if (agent.active === false || !agent.endpoint) throw new PublicError("This agent has not published a compatible live activation endpoint.", 409);
-  const card = await cached(`card-${id}`, async () => cardSchema.parse(await remoteJson(agent.endpoint!)), 30000);
+  const card = await cached(`card-${id}`, async () => { try { return cardSchema.parse(await remoteJson(agent.endpoint!)); } catch { throw new PublicError("The agent service is currently unreachable or returned an unsupported agent card. Choose another research provider or retry later.", 503); } }, 30000);
   if (new URL(card.url).origin !== new URL(agent.endpoint).origin) throw new PublicError("The agent card points to a different provider. Activation needs publisher review.", 409);
   if (!card.skills.some(s => s.id === "negotiate") || !card.skills.some(s => s.id === "notify_funded")) throw new PublicError("This agent uses an external activation flow. Open its provider page to review the requirements.", 409);
   return { agent, card };
@@ -30,7 +30,8 @@ export async function negotiate(id: string, task: string): Promise<SignedQuote> 
   // Read the actual wallet assigned to this identity, not an arbitrary owner or URL field.
   const provider = await publicClient.readContract({ address: erc8183Addresses(56).registry, abi: parseAbi(["function getAgentWallet(uint256) view returns (address)"]), functionName: "getAgentWallet", args: [BigInt(agent.tokenId)] });
   if (!isAddress(provider) || /^0x0{40}$/i.test(provider)) throw new PublicError("This agent has not registered a payment wallet.", 409);
-  const data = await sendSkill(card.url, { skill: "negotiate", task_description: task, terms: { deliverables: "A sourced research report with observed block numbers, timestamps, strategy assumptions and explicit risk flags.", quality_standards: "Use real data. Do not execute swaps or move user funds. Clearly identify unavailable information." } });
+  let data: unknown;
+  try { data = await sendSkill(card.url, { skill: "negotiate", task_description: task, terms: { deliverables: "A sourced research report with observed block numbers, timestamps, strategy assumptions and explicit risk flags.", quality_standards: "Use real data. Do not execute swaps or move user funds. Clearly identify unavailable information." } }); } catch { throw new PublicError("The seller could not return a quote right now. No hiring payment was started. Retry the quote or choose another research provider.", 503); }
   let decoded: ReturnType<typeof decodeQuote>;
   try { decoded = decodeQuote(data, task); } catch (e) { throw new PublicError(e instanceof z.ZodError ? "The seller did not provide a complete, accepted quote in the supported format." : e instanceof Error ? e.message : "The seller quote could not be verified.", 409); }
   const { q, hash, description } = decoded;

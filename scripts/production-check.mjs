@@ -12,7 +12,7 @@ async function check(name, run) {
 async function request(path, options) {
   return fetch(new URL(path, base), { redirect: "error", signal: AbortSignal.timeout(30000), ...options });
 }
-for (const path of ["/", "/profile", "/saved", "/compare", "/dashboard", "/category/rebalancing", "/category/grid", "/category/yield", "/category/health"]) {
+for (const path of ["/", "/docs", "/profile", "/saved", "/compare", "/dashboard", "/category/rebalancing", "/category/grid", "/category/yield", "/category/health"]) {
   await check(`Page ${path}`, async () => {
     const response = await request(path); const text = await response.text();
     if (response.status !== 200 || !/<title>[^<]*Binera Agent Market/.test(text)) throw new Error(`Expected Binera HTML, received HTTP ${response.status}.`);

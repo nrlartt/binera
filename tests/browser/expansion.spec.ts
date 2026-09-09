@@ -1,10 +1,22 @@
 import { test, expect } from "@playwright/test";
 
+test("research catalogue is distinct from the registry and docs are public", async ({ page, request }) => {
+  const response = await request.get("/api/discover"); const data = await response.json();
+  expect(response.status()).toBe(200); expect(data.total).toBeLessThanOrEqual(4);
+  expect(data.scope).toContain("Reviewed research providers");
+  await page.goto("/docs");
+  await expect(page.getByRole("heading", { name: "Request and hire", exact: true })).toBeVisible();
+  await page.goto("/profile");
+  await expect(page.getByRole("heading", { name: "Connect your account to open your profile." })).toBeVisible();
+  await expect(page.getByLabel("Display name")).toHaveCount(0);
+});
+
 test("shared comparison sends identical tasks and preserves successful quotes", async ({ page }) => {
   const tasks: string[] = [];
   page.on("request", request => { if (request.url().endsWith("/api/quote") && request.method() === "POST") tasks.push(request.postDataJSON().task); });
   await page.goto("/compare?ids=scan-56-341225,scan-56-46501");
   await expect(page.locator(".comparison-table")).toBeVisible({ timeout: 40000 });
+  await page.getByText("Customize research (optional)", { exact: true }).click();
   await page.getByLabel("Strategy budget (optional)").fill("3200");
   await page.getByRole("button", { name: "Get comparable quotes", exact: true }).click();
   await expect(page.getByRole("button", { name: "Get comparable quotes", exact: true })).toBeEnabled({ timeout: 60000 });
@@ -12,15 +24,14 @@ test("shared comparison sends identical tasks and preserves successful quotes", 
   await expect(page.getByRole("row", { name: /Quoted agent fee/ })).toContainText(" U");
   await page.locator(".comparison-table").getByRole("link", { name: "View agent" }).first().click();
   await page.getByRole("button", { name: "Review activation", exact: true }).click();
+  await page.getByText("Customize research (optional)", { exact: true }).click();
   await expect(page.getByLabel("Strategy budget (optional)")).toHaveValue("3200");
 });
 
-test("profile persists locally and saved identities refresh from the live registry", async ({ page }) => {
+test("profile requires a connected account and saved identities refresh live", async ({ page }) => {
   await page.goto("/profile");
-  await page.getByLabel("Display name").fill("Binera researcher");
-  await page.getByLabel("About your research goals").fill("Compare sourced USDT research.");
-  await page.getByRole("button", { name: "Save profile", exact: true }).click();
-  await page.reload(); await expect(page.getByLabel("Display name")).toHaveValue("Binera researcher");
+  await expect(page.getByLabel("Display name")).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Connect account", exact: true })).toBeVisible();
   await page.goto("/agents/scan-56-341225");
   await page.getByRole("button", { name: /^Save / }).click();
   await page.goto("/saved"); await expect(page.locator(".job-card")).toHaveCount(1);
@@ -36,9 +47,11 @@ test("shared filters restore and research forms show live pool context", async (
   await expect(page.getByLabel("Sort agents")).toHaveValue("feedback");
   await page.goto("/agents/scan-56-341225");
   await page.getByRole("button", { name: "Review activation", exact: true }).click();
+  await page.getByText("Customize research (optional)", { exact: true }).click();
   await page.getByLabel("Strategy budget (optional)").fill("5000");
   await page.getByText("Review the exact task sent to sellers", { exact: true }).click();
   await expect(page.locator(".task-text")).toContainText("5000 USDT");
+  await page.getByText("Preview market or account data (optional)", { exact: true }).click();
   await page.getByRole("button", { name: "Read live context", exact: true }).click();
   await expect(page.locator(".research-preview")).toContainText("Checked onchain", { timeout: 45000 });
   await page.getByLabel("Category", { exact: true }).selectOption("health");
@@ -53,6 +66,8 @@ test("changing reviewed task inputs invalidates a live signed quote", async ({ p
   await page.getByRole("button", { name: "Get a verified price quote", exact: true }).click();
   await expect(page.getByText("Seller signature checked", { exact: true })).toBeVisible({ timeout: 60000 });
   await page.getByRole("checkbox").check();
+  await page.getByRole("button", { name: "Edit task", exact: true }).click();
+  await page.getByText("Customize research (optional)", { exact: true }).click();
   await page.getByLabel("Strategy budget (optional)").fill("7000");
   await expect(page.getByText("Seller signature checked", { exact: true })).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Connect account to activate", exact: true })).toHaveCount(0);

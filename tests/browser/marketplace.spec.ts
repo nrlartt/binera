@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 
 test("live discovery, intent, detail, compatible comparison and account boundary", async ({ page }) => {
   const errors: string[] = []; page.on("pageerror", error => errors.push(error.message));
-  await page.goto("/"); await expect(page.getByRole("heading", { name: /Find the right agent/ })).toBeVisible();
+  await page.goto("/?catalog=registry"); await expect(page.getByRole("heading", { name: /Find the right agent/ })).toBeVisible();
   await expect(page.locator(".agent-card").first()).toBeVisible({ timeout: 40000 });
   await page.getByRole("button", { name: "All agents", exact: true }).click();
   await expect(page.locator(".agent-card").first()).toBeVisible({ timeout: 40000 });
