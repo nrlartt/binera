@@ -1,6 +1,6 @@
 # Altana integration evidence
 
-Status: integration implemented; onchain lifecycle and agent ownership evidence incomplete.
+Status: integration implemented; buyer permission grant confirmed onchain; execution, revocation and seller-wallet evidence incomplete.
 
 ## Implemented behavior
 
@@ -11,6 +11,8 @@ Code references: [permission policy](../src/lib/permissions.ts), [activation](..
 ## Observed account
 
 The [read-only observation](evidence/owner-account-observation.json) records wallet `0x78119B8eaF7C66FaFB77FB50A10c7C707051b3A5` at BSC block **120869139**. Two Keystore public keys were returned: one valid and one invalid. This establishes registry state at that block. An invalid key may have expired; it does not establish a revocation transaction. The snapshot does not prove a seller owns an Altana wallet, a session executed a job, or a delivery completed.
+
+The [permission receipt observation](evidence/altana-permission-2026-09-09.json) records successful transaction [`0x3a4f…b81a`](https://bscscan.com/tx/0x3a4f349c77a94fe595fc716b68e5aaddd9cb48d922f5ca859be7622071d5b81a). It called `execute(bytes)` through the Altana relay path and emitted events from the BNB Keystore and Keystore Controller. The transaction used no native value and paid `0.00006788045 BNB` in gas. This is permission evidence only; no funding or delivery claim is inferred.
 
 ## Required lifecycle evidence
 

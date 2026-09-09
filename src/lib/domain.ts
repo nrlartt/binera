@@ -44,8 +44,9 @@ export function mentioned(text: string, options: readonly string[]): string[] {
   return options.filter(value => new RegExp(`\\b${value}\\b`, "i").test(text));
 }
 export function parseIntent(query: string): Intent {
+  const aliases: Record<string, Category> = { liquidity: "rebalancing", pool: "rebalancing", rebalance: "rebalancing", trading: "grid", trade: "grid", interest: "yield", earn: "yield", lending: "health", health: "health", liquidation: "health", borrow: "health" };
   const amount = query.match(/(?:\$\s*)?(\d[\d,]*(?:\.\d+)?)\s*(?:USDT|USDC|BNB|BTC|ETH|dollars|USD)\b/i);
-  return { query, category: classify(query)[0] ?? null, assets: mentioned(query, assets), protocols: mentioned(query, protocols),
+  return { query, category: classify(query)[0] ?? aliases[query.trim().toLowerCase()] ?? null, assets: mentioned(query, assets), protocols: mentioned(query, protocols),
     risk: /low.?risk|conservative|without.*(?:risk|loss)|capital preserv/i.test(query) ? "low" : /high.?risk|aggressive/i.test(query) ? "high" : /medium.?risk|moderate/i.test(query) ? "medium" : "unknown",
     amount: amount ? Number(amount[1].replaceAll(",", "")) : null, method: "rules" };
 }
@@ -55,6 +56,7 @@ export function rankAgents(agents: Agent[], intent: Intent, now = Date.now()): R
   const searchWords = words.filter(w => !["find", "me", "an", "a", "the", "agent", "agents", "for", "please", "show"].includes(w));
   return agents.filter(a => (!intent.category || a.categories.includes(intent.category)) && (!unconstrained || !searchWords.length || searchWords.every(w => `${a.name} ${a.description}`.toLowerCase().includes(w)))).map(a => {
     const reasons: string[] = []; const missing: string[] = []; let rankPoints = 0;
+    if (intent.query.trim() && a.name.toLowerCase().includes(intent.query.trim().toLowerCase())) { rankPoints += a.name.toLowerCase() === intent.query.trim().toLowerCase() ? 100 : 60; reasons.push("Agent name matches your search"); }
     if (intent.category && a.categories.includes(intent.category)) { rankPoints += 40; reasons.push("Publisher describes the requested capability"); }
     for (const asset of intent.assets) { if (a.assets.includes(asset)) { rankPoints += 10; reasons.push(`${asset} mentioned by the publisher`); } else missing.push(`${asset} support not published`); }
     for (const protocol of intent.protocols) { if (a.protocols.includes(protocol)) { rankPoints += 10; reasons.push(`${protocol} mentioned by the publisher`); } else missing.push(`${protocol} support not published`); }

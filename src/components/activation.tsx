@@ -6,7 +6,7 @@ import type { Agent } from "@/lib/domain";
 import type { SignedQuote } from "@/lib/quote";
 import { hiringBalanceIssue, hiringPermissions, NETWORK_FEE_CAP, SESSION_SECONDS } from "@/lib/permissions";
 import { matchesJob } from "@/lib/job-match";
-import { saveActivity, type ActivityRecord } from "@/lib/activity";
+import { loadActivity, saveActivity, type ActivityRecord } from "@/lib/activity";
 import { useMarket } from "./shell";
 import { api, dateLabel, ErrorNotice, SourceLink } from "./ui";
 import Link from "next/link";
@@ -33,7 +33,7 @@ export function Activation({ agent }: { agent: Agent }) {
   async function activate() {
     if (!wallet || !client) { openWallet(); return; }
     if (!quote || quote.task !== task || !approved || lock.current || record) return;
-    lock.current = true; setError(""); let current: ActivityRecord | null = null;
+    lock.current = true; setError(""); let current: ActivityRecord | null = null; let stage: NonNullable<ActivityRecord["failureStage"]> = "balance";
     try {
       if (quote.expiresAt * 1000 <= Date.now() + 30000) throw new Error("Your quote expired. Request a fresh quote.");
       setBusy("Checking your account balance…");
@@ -44,17 +44,21 @@ export function Activation({ agent }: { agent: Agent }) {
       if (balanceIssue) throw new Error(balanceIssue);
       // Ensure browser can retain public revocation handles before granting a key.
       localStorage.setItem("agentmarket-storage-check", "ok"); localStorage.removeItem("agentmarket-storage-check");
+      const unresolved = loadActivity().find(r => r.wallet.toLowerCase() === wallet.address.toLowerCase() && !r.jobId && r.status !== "revoked" && r.session.expiry * 1000 > Date.now());
+      if (unresolved) throw new Error("An earlier permission request is still unresolved. Check My agents before creating another paid permission.");
       const sessionSigner = sdk.createPrivateKeySigner();
       const preparedSession = { walletAddress: wallet.address, signer: sessionSigner, publicKey: sessionSigner.publicKey, permissions: hiringPermissions(BigInt(quote.price)), expiry: Math.floor(Date.now() / 1000) + SESSION_SECONDS };
       current = { id: preparedSession.publicKey, agentId: agent.id, agentName: agent.name, wallet: wallet.address, createdAt: new Date().toISOString(), session: sdk.serializeSession(preparedSession), quote: quote.description, price: quote.price, provider: quote.provider, task: quote.task, status: "pending" };
       // Retain the revocation reference BEFORE submission, including when a relay times out.
       saveActivity(current); setRecord(current);
       setBusy("Approve the limited session with your passkey…");
+      stage = "permission";
       const session = await client.grantSession({ wallet, signer: wallet.signer, sessionSigner, register: true, permissions: preparedSession.permissions, expiry: preparedSession.expiry });
       current = { id: session.publicKey, agentId: agent.id, agentName: agent.name, wallet: wallet.address, createdAt: new Date().toISOString(), session: sdk.serializeSession(session), grantTx: session.transactionHash, quote: quote.description, price: quote.price, provider: quote.provider, task: quote.task, status: "permission-granted" };
       setRecord(current); saveActivity(current);
       if (quote.expiresAt * 1000 <= Date.now() + 15000) throw new Error("The quote expired during approval. The permission remains visible in My agents; revoke it before requesting another quote.");
       setBusy("Funding your job within the approved limits…");
+      stage = "funding";
       const result = await sdk.hireErc8183Agent(session, { provider: quote.provider, task: quote.description, budget: BigInt(quote.price) }, { network: sdk.BNB, noWait: true });
       current = { ...current, callsId: result.callsId, jobId: result.jobId.toString(), fundingTx: result.transactionHash, status: "pending" };
       setRecord(current); saveActivity(current);
@@ -69,10 +73,15 @@ export function Activation({ agent }: { agent: Agent }) {
       if (!funded) throw new Error("The network has not confirmed funding. Check My agents before attempting another payment.");
       current = { ...current, status: "funded" }; saveActivity(current); setRecord(current);
       setBusy("Requesting delivery from the agent…");
+      stage = "delivery";
       await api(`/api/jobs/${result.jobId}/notify`, { method: "POST", body: JSON.stringify({ agentId: agent.id }) });
     } catch (e) {
       const text = e instanceof Error ? e.message : "";
-      const known = /marketplace account has|U balance could not|quote expired|network has not|permission remains/i.test(text);
+      if (current) {
+        const reason: NonNullable<ActivityRecord["failureReason"]> = /insufficient|exceeds.*balance|not enough/i.test(text) ? "insufficient-funds" : /user.*reject|denied|cancel/i.test(text) ? "user-rejected" : /permission|spend limit|unauthorized|unknown key/i.test(text) ? "permission-rejected" : "unconfirmed";
+        current = { ...current, failureStage: stage, failureReason: reason }; saveActivity(current); setRecord(current);
+      }
+      const known = /earlier permission|marketplace account has|U balance could not|quote expired|network has not|permission remains/i.test(text);
       setError(known ? text : current ? "The next step could not be confirmed. Your request reference is saved in My agents. Check its onchain status before retrying; you can revoke access there." : "The request was not completed. Check your balance, approve the passkey request, and try again. No success has been assumed.");
     } finally { lock.current = false; setBusy(""); }
   }

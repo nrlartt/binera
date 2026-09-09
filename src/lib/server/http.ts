@@ -10,7 +10,7 @@ export function publicIPv4(ip: string): boolean {
 }
 // Resolve once and pin the checked address into the TLS connection. No redirects,
 // credentials or cookies are forwarded to provider-controlled endpoints.
-export async function remoteText(url: string, options: { body?: unknown; headers?: Record<string, string>; timeout?: number } = {}): Promise<string> {
+export async function remoteText(url: string, options: { body?: unknown; headers?: Record<string, string>; timeout?: number; allowPaymentRequired?: boolean } = {}): Promise<string> {
   const u = new URL(url);
   if (u.protocol !== "https:" || u.username || u.password || (u.port && u.port !== "443")) throw new PublicError("The provider published an unsupported endpoint.");
   const records = await Promise.race([lookup(u.hostname, { all: true, family: 4 }), new Promise<never>((_, reject) => { const timer = setTimeout(() => reject(new PublicError("Provider DNS timed out.")), 5000); timer.unref(); })]);
@@ -21,7 +21,7 @@ export async function remoteText(url: string, options: { body?: unknown; headers
       family: 4,
       lookup: (_hostname, _options, callback) => callback(null, records[0].address, 4),
     }, res => {
-      if (!res.statusCode || res.statusCode < 200 || res.statusCode >= 300) { res.resume(); reject(new PublicError(res.statusCode === 429 ? "The data source is busy. Please try again shortly." : "The provider is unavailable. Please try again later.")); return; }
+      if (!res.statusCode || ((res.statusCode < 200 || res.statusCode >= 300) && !(options.allowPaymentRequired && res.statusCode === 402))) { res.resume(); reject(new PublicError(res.statusCode === 429 ? "The data source is busy. Please try again shortly." : "The provider is unavailable. Please try again later.")); return; }
       const chunks: Buffer[] = []; let size = 0;
       res.on("data", (chunk: Buffer) => { size += chunk.length; if (size > 2_000_000) { req.destroy(new PublicError("The provider response is too large.")); return; } chunks.push(chunk); });
       res.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));

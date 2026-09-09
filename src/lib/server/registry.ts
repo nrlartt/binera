@@ -8,17 +8,19 @@ const rowSchema = z.object({
   total_feedbacks: z.number().nullable().optional(), average_score: z.number().nullable().optional(), supported_protocols: z.array(z.string()).optional(),
   updated_at: z.string().nullable().optional(), is_active: z.boolean().optional(), a2a_endpoint: z.string().nullable().optional(),
   mcp_server: z.string().nullable().optional(), agent_url: z.string().nullable().optional(), created_tx_hash: z.string().nullable().optional(),
+  services: z.object({ web: z.object({ endpoint: z.string().optional() }).optional() }).passthrough().optional(),
+  x402_supported: z.boolean().optional(),
   endpoint_last_checked_at: z.string().nullable().optional(),
   health_status: z.object({ overall_status: z.string().optional() }).passthrough().nullable().optional(),
 }).passthrough();
 export function normalizeScan(input: unknown, fetchedAt = new Date().toISOString()): Agent {
   const a = rowSchema.parse(input); const text = `${a.name} ${a.description ?? ""}`;
   const endpoint = safeLink(a.a2a_endpoint); const mcp = safeLink(a.mcp_server);
-  const interfaces = [...new Set([...(a.supported_protocols ?? []), ...(endpoint ? ["A2A"] : []), ...(mcp ? ["MCP"] : [])])];
+  const interfaces = [...new Set([...(a.supported_protocols ?? []), ...(endpoint ? ["A2A"] : []), ...(mcp ? ["MCP"] : []), ...(a.x402_supported ? ["x402"] : [])])];
   const interfacePublished = Boolean(endpoint || mcp);
   const endpointLive = interfacePublished && a.health_status?.overall_status === "healthy";
   return { id: `scan-${a.chain_id}-${a.token_id}`, tokenId: a.token_id, chainId: a.chain_id, name: a.name, description: a.description ?? "No description published.", categories: classify(text), assets: mentioned(text, assets), protocols: mentioned(text, protocols), capabilities: classify(text), owner: a.owner_address ?? null, agentWallet: a.agent_wallet ?? null,
-    registered: true, verified: a.is_verified === true, feedbackCount: a.total_feedbacks ?? null, feedbackAverage: (a.total_feedbacks ?? 0) > 0 ? a.average_score ?? null : null, risk: "unknown", pricing: null, performance: null, active: a.is_active ?? null, endpoint, website: safeLink(a.agent_url), interfaces, source: "8004scan", sourceUrl: `https://8004scan.io/agents/${a.chain_id}/${a.token_id}`, updatedAt: a.updated_at ?? null, fetchedAt, registrationTx: typeof a.created_tx_hash === "string" && /^0x[0-9a-f]{64}$/i.test(a.created_tx_hash) ? a.created_tx_hash : null,
+    registered: true, verified: a.is_verified === true, feedbackCount: a.total_feedbacks ?? null, feedbackAverage: (a.total_feedbacks ?? 0) > 0 ? a.average_score ?? null : null, risk: "unknown", pricing: null, performance: null, active: a.is_active ?? null, endpoint, website: safeLink(a.agent_url) ?? safeLink(a.services?.web?.endpoint), interfaces, source: "8004scan", sourceUrl: `https://8004scan.io/agents/${a.chain_id}/${a.token_id}`, updatedAt: a.updated_at ?? null, fetchedAt, registrationTx: typeof a.created_tx_hash === "string" && /^0x[0-9a-f]{64}$/i.test(a.created_tx_hash) ? a.created_tx_hash : null,
     evidence: { identityRegistered: true, interfacePublished, endpointLive, hiringCompatible: false, provenDelivery: false, observedAt: endpointLive ? a.endpoint_last_checked_at ?? fetchedAt : null } };
 }
 export interface AgentProvider { name: string; discover(): Promise<Agent[]>; }

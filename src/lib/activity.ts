@@ -13,6 +13,7 @@ const session = z.object({
 });
 export const activitySchema = z.object({
   id: hex, agentId: z.string().regex(/^(scan-56-\d{1,20}|studio-[\w-]+)$/).max(2000), agentName: z.string().max(1000), wallet: address,
+  failureStage: z.enum(["balance", "permission", "funding", "delivery"]).optional(), failureReason: z.enum(["insufficient-funds", "permission-rejected", "user-rejected", "unconfirmed"]).optional(),
   createdAt: z.iso.datetime(), session, grantTx: tx.optional(), jobId: z.string().regex(/^\d{1,15}$/).optional(),
   fundingTx: tx.optional(), callsId: z.string().min(1).max(512).optional(), quote: z.string().max(4096), price: decimal.refine(p => /[1-9]/.test(p)),
   provider: address.optional(), task: z.string().max(1200), status: z.enum(["permission-granted", "funded", "pending", "revoked"]), revokeTx: tx.optional(),

@@ -1,49 +1,55 @@
 {
-  "checkedAt": "2026-09-09T06:12:52.785Z",
-  "publicUrl": "https://binera-production.up.railway.app",
+  "checkedAt": "2026-09-09T11:28:29.859Z",
+  "publicUrl": "https://binera.xyz",
   "passed": true,
   "scope": "Unauthenticated deployment smoke test. No funded hiring, session grant, delivery or revocation is tested.",
   "checks": [
     {
       "name": "Page /",
       "passed": true,
-      "durationMs": 8365,
+      "durationMs": 517,
+      "detail": "HTTP 200 and Binera page title. Client-side interactions are covered separately by browser tests."
+    },
+    {
+      "name": "Page /docs",
+      "passed": true,
+      "durationMs": 215,
       "detail": "HTTP 200 and Binera page title. Client-side interactions are covered separately by browser tests."
     },
     {
       "name": "Page /profile",
       "passed": true,
-      "durationMs": 221,
+      "durationMs": 210,
       "detail": "HTTP 200 and Binera page title. Client-side interactions are covered separately by browser tests."
     },
     {
       "name": "Page /saved",
       "passed": true,
-      "durationMs": 242,
+      "durationMs": 219,
       "detail": "HTTP 200 and Binera page title. Client-side interactions are covered separately by browser tests."
     },
     {
       "name": "Page /compare",
       "passed": true,
-      "durationMs": 235,
+      "durationMs": 212,
       "detail": "HTTP 200 and Binera page title. Client-side interactions are covered separately by browser tests."
     },
     {
       "name": "Page /dashboard",
       "passed": true,
-      "durationMs": 221,
+      "durationMs": 209,
       "detail": "HTTP 200 and Binera page title. Client-side interactions are covered separately by browser tests."
     },
     {
       "name": "Page /category/rebalancing",
       "passed": true,
-      "durationMs": 328,
+      "durationMs": 375,
       "detail": "HTTP 200 and Binera page title. Client-side interactions are covered separately by browser tests."
     },
     {
       "name": "Page /category/grid",
       "passed": true,
-      "durationMs": 222,
+      "durationMs": 224,
       "detail": "HTTP 200 and Binera page title. Client-side interactions are covered separately by browser tests."
     },
     {
@@ -55,31 +61,31 @@
     {
       "name": "Page /category/health",
       "passed": true,
-      "durationMs": 222,
+      "durationMs": 226,
       "detail": "HTTP 200 and Binera page title. Client-side interactions are covered separately by browser tests."
     },
     {
       "name": "Live dependencies",
       "passed": true,
-      "durationMs": 1149,
+      "durationMs": 748,
       "detail": "Chain and registry healthy. Intent: rules; TermiX: not-configured."
     },
     {
       "name": "PancakeSwap data freshness",
       "passed": true,
-      "durationMs": 756,
-      "detail": "Observed BSC block 120828197."
+      "durationMs": 622,
+      "detail": "Observed BSC block 120870269."
     },
     {
       "name": "Production origin",
       "passed": true,
-      "durationMs": 219,
+      "durationMs": 217,
       "detail": "Invalid task used only to test request validation. No quote or transaction requested."
     },
     {
       "name": "Foreign origin rejected",
       "passed": true,
-      "durationMs": 212,
+      "durationMs": 207,
       "detail": "Invalid task used only to test request validation. No quote or transaction requested."
     }
   ]

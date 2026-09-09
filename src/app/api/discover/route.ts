@@ -8,7 +8,7 @@ export async function GET(request: Request) {
   try {
     const params = new URL(request.url).searchParams; const query = params.get("q") ?? "";
     if (query.length > 500) throw new PublicError("Please keep your search under 500 characters.", 400);
-    const broad = params.get("catalog") === "registry";
+    let broad = params.get("catalog") === "registry";
     const intent = await understand(query);
     const category = params.get("category");
     if (category && categories.some(c => c.id === category)) intent.category = category as Category;
@@ -17,15 +17,20 @@ export async function GET(request: Request) {
     if (["low", "medium", "high"].includes(params.get("risk") ?? "")) intent.risk = params.get("risk") as "low" | "medium" | "high";
     const size = 12; const maxRegistryPage = Math.floor(10000 / size) + 1;
     const page = Math.max(1, Math.min(broad ? maxRegistryPage : 100, Math.floor(Number(params.get("page")) || 1)));
-    const result = broad
+    let result = broad
       ? await browseRegistry({ offset: (page - 1) * size, limit: size, search: intent.category ? categorySearch[intent.category] : query, sort: params.get("sort") ?? undefined })
       : await researchCatalogue();
+    if (!broad && query.trim() && !rankAgents(result.agents, intent).length) {
+      result = await browseRegistry({ offset: (page - 1) * size, limit: size, search: query.trim(), sort: params.get("sort") ?? undefined });
+      broad = true;
+    }
     const evaluated = rankAgents(result.agents, intent);
     const evaluatedById = new Map(evaluated.map(agent => [agent.id, agent]));
     const ranked = (broad ? result.agents.map(agent => evaluatedById.get(agent.id) ?? { ...agent, reasons: ["Returned by the source search"], missing: ["Requested capability is not explicit in the normalized identity metadata"], eligible: false, rankPoints: 0 }) : evaluated)
       .filter(a => params.get("verified") !== "true" || a.verified);
     const sort = params.get("sort");
     if (sort === "updated" || sort === "feedback") ranked.sort((a, b) => Number(b.eligible) - Number(a.eligible) || (sort === "feedback" ? (b.feedbackCount ?? -1) - (a.feedbackCount ?? -1) : (Date.parse(b.updatedAt || "") || 0) - (Date.parse(a.updatedAt || "") || 0)) || a.id.localeCompare(b.id));
+    else ranked.sort((a, b) => Number(b.eligible) - Number(a.eligible) || b.rankPoints - a.rankPoints || a.id.localeCompare(b.id));
     const matches = ranked.filter(a => a.eligible).length;
     const compatible = ranked.filter(a => agentEvidence(a).hiringCompatible).length;
     const total = broad && "total" in result && typeof result.total === "number" ? result.total : ranked.length;

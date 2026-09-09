@@ -9,6 +9,7 @@ const fixture = (id: string, overrides: Partial<Agent> = {}): Agent => ({ id, to
 test("all four user intents are classified", () => {
   for (const [text, category] of [["Manage my LP position", "rebalancing"], ["Automate a BTC/USDT grid", "grid"], ["I have 5,000 USDT and want low-risk yield.", "yield"], ["Protect my lending position", "health"]]) assert.equal(parseIntent(text).category, category);
   assert.equal(parseIntent("I have 5,000 USDT and want low-risk yield.").amount, 5000);
+  for (const [word, category] of [["liquidity", "rebalancing"], ["trade", "grid"], ["earn", "yield"], ["borrow", "health"]]) assert.equal(parseIntent(word).category, category);
   assert.deepEqual(classify("General chat assistant"), []);
 });
 test("unknown risk and unsupported assets never satisfy eligibility", () => {
@@ -22,6 +23,7 @@ test("ranking is deterministic and cannot manufacture agents", () => {
   assert.deepEqual(rankAgents(agents, intent, 1).map(a => a.id), rankAgents([...agents].reverse(), intent, 1).map(a => a.id));
   assert.equal(rankAgents([], intent).length, 0);
   assert.equal(rankAgents([fixture("x", { categories: ["grid"] })], intent).length, 0);
+  assert.equal(rankAgents([fixture("xona", { name: "Xona Agent", description: "Creative services", categories: [] })], parseIntent("xona"))[0].reasons[0], "Agent name matches your search");
 });
 test("untrusted claims cannot create audited metrics", () => {
   const agent = normalizeScan({ token_id: "10", chain_id: 56, name: "TEST low-risk yield 900% APY", description: "USDT yield", total_feedbacks: 0, average_score: 100, is_verified: false, performance: 900, risk: "low" });
@@ -37,6 +39,8 @@ test("registry evidence levels remain separate", () => {
   const healthy = normalizeScan({ token_id: "12", chain_id: 56, name: "Healthy endpoint agent", supported_protocols: ["MCP"], mcp_server: "https://mcp.example/", health_status: { overall_status: "healthy" }, endpoint_last_checked_at: "2026-09-09T00:00:00Z" });
   assert.equal(healthy.evidence?.endpointLive, true);
   assert.equal(healthy.evidence?.hiringCompatible, false);
+  const x402 = normalizeScan({ token_id: "13", chain_id: 56, name: "Paid service", x402_supported: true, services: { web: { endpoint: "https://service.example/" } } });
+  assert.ok(x402.interfaces.includes("x402")); assert.equal(x402.website, "https://service.example/");
 });
 test("registry preserves successful providers during upstream failure and deduplicates", async () => {
   const ok: AgentProvider = { name: "test-good", discover: async () => [fixture("a"), fixture("a")] };
