@@ -43,7 +43,7 @@ test("shared filters restore and research forms show live pool context", async (
   await expect(page.locator(".research-preview")).toContainText("Checked onchain", { timeout: 45000 });
   await page.getByLabel("Category", { exact: true }).selectOption("health");
   await expect(page.getByLabel("Venus Core account address (optional)")).toBeVisible();
-  await expect(page.getByLabel("Research goal", { exact: true })).toHaveValue(/health factor monitoring/);
+  await expect(page.getByRole("textbox", { name: /^Research goal/ })).toHaveValue(/health factor monitoring/);
   await expect(page.getByRole("button", { name: "Read live context", exact: true })).toBeDisabled();
 });
 
