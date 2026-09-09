@@ -2,14 +2,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
-import { Compass, Layers3, Columns3, ArrowUpRight, Menu, X, Wallet, LoaderCircle, Leaf, ShieldCheck } from "lucide-react";
+import { Bookmark, UserRound, Compass, Layers3, Columns3, ArrowUpRight, Menu, X, Wallet, LoaderCircle, Leaf, ShieldCheck } from "lucide-react";
 import type { Client, CreateWalletResult } from "@altananetwork/sdk";
 import { categories, type Agent } from "@/lib/domain";
 import { CategoryIcon, CopyAddress, ErrorNotice, shortAddress } from "./ui";
 import { BrowserWalletPanel, useBrowserWallet } from "./browser-wallet";
 import { useDialog } from "./use-dialog";
 
-type Context = { compared: Agent[]; toggleCompare: (agent: Agent) => void; clearCompare: () => void; wallet: CreateWalletResult | null; client: Client | null; openWallet: () => void };
+type Context = { compared: Agent[]; toggleCompare: (agent: Agent) => void; clearCompare: () => void; replaceCompared: (agents: Agent[]) => void; wallet: CreateWalletResult | null; client: Client | null; openWallet: () => void };
 const MarketContext = createContext<Context | null>(null);
 export const useMarket = () => { const context = useContext(MarketContext); if (!context) throw new Error("Missing marketplace context"); return context; };
 export function Shell({ children }: { children: React.ReactNode }) {
@@ -53,7 +53,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
       setClient(c); setWallet(w); setWalletOpen(false);
     } catch { setError("The passkey request was not completed. Try again, or use a device where your passkey is saved."); } finally { setBusy(false); }
   }
-  return <MarketContext.Provider value={{ compared, toggleCompare, clearCompare: () => updateCompare([]), wallet, client, openWallet: () => setWalletOpen(true) }}>
+  return <MarketContext.Provider value={{ compared, toggleCompare, clearCompare: () => updateCompare([]), replaceCompared: updateCompare, wallet, client, openWallet: () => setWalletOpen(true) }}>
     <a className="skip-link" href="#main">Skip to content</a>
     <aside className={`sidebar ${mobile ? "mobile-open" : ""}`}>
       <Link href="/" className="brand" aria-label="Binera Agent Market home" onClick={() => setMobile(false)}><span className="brand-symbol"><Layers3 size={23} /></span>Binera<span className="brand-dot">.</span></Link>
@@ -62,12 +62,14 @@ export function Shell({ children }: { children: React.ReactNode }) {
         <Link className={`nav-item ${path === "/" ? "active" : ""}`} href="/" onClick={() => setMobile(false)}><Compass size={19} />Discover<span className="nav-arrow">↗</span></Link>
         <Link className={`nav-item ${path === "/dashboard" ? "active" : ""}`} href="/dashboard" onClick={() => setMobile(false)}><Layers3 size={19} />My agents</Link>
         <Link className={`nav-item ${path === "/compare" ? "active" : ""}`} href="/compare" onClick={() => setMobile(false)}><Columns3 size={19} />Compare{compared.length > 0 && <span className="count">{compared.length}</span>}</Link>
+        <Link className={`nav-item ${path === "/saved" ? "active" : ""}`} href="/saved" onClick={() => setMobile(false)}><Bookmark size={19} />Saved agents</Link>
+        <Link className={`nav-item ${path === "/profile" ? "active" : ""}`} href="/profile" onClick={() => setMobile(false)}><UserRound size={19} />Profile</Link>
       </nav>
       <div className="sidebar-label category-label">EXPLORE CATEGORIES</div>
       <nav aria-label="Agent categories">{categories.map(c => <Link className={`nav-item category-nav ${path === `/category/${c.id}` ? "active" : ""}`} key={c.id} href={`/category/${c.id}`} onClick={() => setMobile(false)}><CategoryIcon category={c.id} size={18} />{c.id === "health" ? "Health monitoring" : c.name}</Link>)}</nav>
       <div className="sidebar-bottom"><div className="sidebar-note"><ShieldCheck size={23} /><strong>Your goals. Your control.</strong><p>Review the evidence.<br />Choose what an agent can do.</p><Link href="/dashboard">Manage permissions <ArrowUpRight size={14} /></Link></div><div className="chain-label"><span className="chain-diamond">◆</span>BNB Smart Chain<span className="network-dot" /></div></div>
     </aside>
-    <div className="workspace"><header className="topbar"><button aria-label={mobile ? "Close navigation" : "Open navigation"} className="icon-button mobile-menu" onClick={() => setMobile(!mobile)}>{mobile ? <X size={20} /> : <Menu size={20} />}</button><div className="breadcrumb">Marketplace<span>/</span><strong>{path === "/dashboard" ? "My agents" : path === "/compare" ? "Comparison" : path.startsWith("/agents/") ? "Agent overview" : "Discover"}</strong></div><div className="topbar-right"><span className="noncustodial"><ShieldCheck size={14} />You stay in control</span><button className="button wallet-button" onClick={() => setWalletOpen(true)}><Wallet size={16} />{browser.connection ? shortAddress(browser.connection.address) : wallet ? shortAddress(wallet.address) : "Connect wallet"}</button></div></header>
+    <div className="workspace"><header className="topbar"><button aria-label={mobile ? "Close navigation" : "Open navigation"} className="icon-button mobile-menu" onClick={() => setMobile(!mobile)}>{mobile ? <X size={20} /> : <Menu size={20} />}</button><div className="breadcrumb">Marketplace<span>/</span><strong>{path === "/profile" ? "Profile" : path === "/saved" ? "Saved agents" : path === "/dashboard" ? "My agents" : path === "/compare" ? "Comparison" : path.startsWith("/agents/") ? "Agent overview" : "Discover"}</strong></div><div className="topbar-right"><span className="noncustodial"><ShieldCheck size={14} />You stay in control</span><button className="button wallet-button" onClick={() => setWalletOpen(true)}><Wallet size={16} />{browser.connection ? shortAddress(browser.connection.address) : wallet ? shortAddress(wallet.address) : "Connect wallet"}</button></div></header>
       <main id="main">{children}</main><footer className="footer"><span>© {new Date().getFullYear()} Binera Agent Market</span><span>Real agents. Evidence before action.</span><span><Leaf size={13} /> Built on BNB Chain</span></footer>
     </div>
     {compared.length > 0 && path !== "/compare" && <div className="compare-dock"><Columns3 size={20} /><span><strong>{compared.length} {compared.length === 1 ? "agent" : "agents"}</strong> selected</span><button className="text-button" onClick={() => updateCompare([])}>Clear</button><Link className="button primary" href={compared.length < 2 ? `/category/${compared[0].categories[0]}` : "/compare"}>{compared.length < 2 ? "Choose a second agent" : "Compare agents"} <ArrowUpRight size={16} /></Link></div>}
