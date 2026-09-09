@@ -9,6 +9,14 @@ export type Risk = "low" | "medium" | "high" | "unknown";
 export const assets = ["USDT", "USDC", "BNB", "WBNB", "BTC", "BTCB", "ETH", "CAKE", "DAI"] as const;
 export const protocols = ["PancakeSwap", "Venus", "Aave", "Lista", "Alpaca", "Beefy"] as const;
 export type Intent = { query: string; category: Category | null; assets: string[]; protocols: string[]; risk: Risk; amount: number | null; method: "rules" | "language-model" };
+export type AgentEvidence = {
+  identityRegistered: boolean;
+  interfacePublished: boolean;
+  endpointLive: boolean;
+  hiringCompatible: boolean;
+  provenDelivery: boolean;
+  observedAt: string | null;
+};
 export type Agent = {
   id: string; tokenId: string; chainId: number; name: string; description: string;
   categories: Category[]; assets: string[]; protocols: string[]; capabilities: string[];
@@ -18,6 +26,7 @@ export type Agent = {
   endpoint: string | null; website: string | null; interfaces: string[];
   source: "8004scan" | "BNB Agent Studio"; sourceUrl: string;
   updatedAt: string | null; fetchedAt: string; registrationTx: string | null;
+  evidence?: AgentEvidence;
 };
 export type RankedAgent = Agent & { reasons: string[]; missing: string[]; eligible: boolean; rankPoints: number };
 export type RegistryResult = { agents: Agent[]; fetchedAt: string; warnings: string[]; partial: boolean };
@@ -66,5 +75,16 @@ export function rankAgents(agents: Agent[], intent: Intent, now = Date.now()): R
 export function safeLink(value: unknown): string | null {
   if (typeof value !== "string") return null;
   try { const u = new URL(value); return u.protocol === "https:" && !u.username && !u.password ? u.href : null; } catch { return null; }
+}
+export function agentEvidence(agent: Agent): AgentEvidence {
+  const published = Boolean(agent.endpoint);
+  return agent.evidence ?? {
+    identityRegistered: agent.registered,
+    interfacePublished: published,
+    endpointLive: false,
+    hiringCompatible: false,
+    provenDelivery: false,
+    observedAt: null,
+  };
 }
 export function categoryName(id: Category) { return categories.find(c => c.id === id)!.name; }

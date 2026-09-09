@@ -1,6 +1,7 @@
 import { getAgent } from "./registry";
 import { activationReadiness } from "./studio";
 import { cached } from "./http";
+import { agentEvidence } from "../domain";
 
 // Real registry identities observed in the service audit, not invented agents.
 // Operators can expand this reviewed set after verifying the provider interface.
@@ -13,7 +14,7 @@ export function researchCatalogue() {
       const results = await Promise.allSettled(ids.slice(i, i + 2).map(async id => {
         const agent = await getAgent(id); const readiness = await activationReadiness(id);
         if (!readiness.available) throw new Error("Service check did not pass");
-        return agent;
+        return { ...agent, evidence: { ...agentEvidence(agent), endpointLive: true, hiringCompatible: true, observedAt: readiness.observedAt } };
       }));
       for (const result of results) { if (result.status === "fulfilled") agents.push(result.value); else unavailable++; }
     }

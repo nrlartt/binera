@@ -2,15 +2,48 @@ import { z } from "zod";
 import { assets, classify, mentioned, protocols, safeLink, type Agent, type Category, type RegistryResult } from "../domain";
 import { cached, PublicError, remoteJson } from "./http";
 
-const rowSchema = z.object({ token_id: z.string(), chain_id: z.number(), name: z.string().max(1000), description: z.string().nullable().optional(), owner_address: z.string().nullable().optional(), agent_wallet: z.string().nullable().optional(), is_verified: z.boolean().optional(), total_feedbacks: z.number().nullable().optional(), average_score: z.number().nullable().optional(), supported_protocols: z.array(z.string()).optional(), updated_at: z.string().nullable().optional(), is_active: z.boolean().optional(), a2a_endpoint: z.string().nullable().optional(), agent_url: z.string().nullable().optional(), created_tx_hash: z.string().nullable().optional() }).passthrough();
+const rowSchema = z.object({
+  token_id: z.string(), chain_id: z.number(), name: z.string().max(1000), description: z.string().nullable().optional(),
+  owner_address: z.string().nullable().optional(), agent_wallet: z.string().nullable().optional(), is_verified: z.boolean().optional(),
+  total_feedbacks: z.number().nullable().optional(), average_score: z.number().nullable().optional(), supported_protocols: z.array(z.string()).optional(),
+  updated_at: z.string().nullable().optional(), is_active: z.boolean().optional(), a2a_endpoint: z.string().nullable().optional(),
+  mcp_server: z.string().nullable().optional(), agent_url: z.string().nullable().optional(), created_tx_hash: z.string().nullable().optional(),
+  endpoint_last_checked_at: z.string().nullable().optional(),
+  health_status: z.object({ overall_status: z.string().optional() }).passthrough().nullable().optional(),
+}).passthrough();
 export function normalizeScan(input: unknown, fetchedAt = new Date().toISOString()): Agent {
   const a = rowSchema.parse(input); const text = `${a.name} ${a.description ?? ""}`;
+  const endpoint = safeLink(a.a2a_endpoint); const mcp = safeLink(a.mcp_server);
+  const interfaces = [...new Set([...(a.supported_protocols ?? []), ...(endpoint ? ["A2A"] : []), ...(mcp ? ["MCP"] : [])])];
+  const interfacePublished = Boolean(endpoint || mcp);
+  const endpointLive = interfacePublished && a.health_status?.overall_status === "healthy";
   return { id: `scan-${a.chain_id}-${a.token_id}`, tokenId: a.token_id, chainId: a.chain_id, name: a.name, description: a.description ?? "No description published.", categories: classify(text), assets: mentioned(text, assets), protocols: mentioned(text, protocols), capabilities: classify(text), owner: a.owner_address ?? null, agentWallet: a.agent_wallet ?? null,
-    registered: true, verified: a.is_verified === true, feedbackCount: a.total_feedbacks ?? null, feedbackAverage: (a.total_feedbacks ?? 0) > 0 ? a.average_score ?? null : null, risk: "unknown", pricing: null, performance: null, active: a.is_active ?? null, endpoint: safeLink(a.a2a_endpoint), website: safeLink(a.agent_url), interfaces: a.supported_protocols ?? [], source: "8004scan", sourceUrl: `https://8004scan.io/agents/${a.chain_id}/${a.token_id}`, updatedAt: a.updated_at ?? null, fetchedAt, registrationTx: typeof a.created_tx_hash === "string" && /^0x[0-9a-f]{64}$/i.test(a.created_tx_hash) ? a.created_tx_hash : null };
+    registered: true, verified: a.is_verified === true, feedbackCount: a.total_feedbacks ?? null, feedbackAverage: (a.total_feedbacks ?? 0) > 0 ? a.average_score ?? null : null, risk: "unknown", pricing: null, performance: null, active: a.is_active ?? null, endpoint, website: safeLink(a.agent_url), interfaces, source: "8004scan", sourceUrl: `https://8004scan.io/agents/${a.chain_id}/${a.token_id}`, updatedAt: a.updated_at ?? null, fetchedAt, registrationTx: typeof a.created_tx_hash === "string" && /^0x[0-9a-f]{64}$/i.test(a.created_tx_hash) ? a.created_tx_hash : null,
+    evidence: { identityRegistered: true, interfacePublished, endpointLive, hiringCompatible: false, provenDelivery: false, observedAt: endpointLive ? a.endpoint_last_checked_at ?? fetchedAt : null } };
 }
 export interface AgentProvider { name: string; discover(): Promise<Agent[]>; }
 const scanBase = "https://api.8004scan.io/api/v1";
 const headers = (): Record<string, string> => process.env.SCAN_API_KEY ? { "X-API-Key": process.env.SCAN_API_KEY } : {};
+export type RegistryPage = RegistryResult & { total: number; offset: number; limit: number; hasMore: boolean };
+export async function browseRegistry(options: { offset: number; limit: number; search?: string; sort?: string }): Promise<RegistryPage> {
+  const offset = Math.max(0, Math.min(10000, Math.floor(options.offset)));
+  const limit = Math.max(1, Math.min(100, Math.floor(options.limit)));
+  const search = options.search?.trim().slice(0, 500) ?? "";
+  const sortBy = options.sort === "feedback" ? "total_feedbacks" : options.sort === "updated" ? "created_at" : "total_score";
+  const params = new URLSearchParams({ chain_id: "56", limit: String(limit), offset: String(offset), sort_by: sortBy, sort_order: "desc" });
+  if (search) params.set("search", search);
+  return cached(`scan-page-${offset}-${limit}-${sortBy}-${search}`, async () => {
+    const fetchedAt = new Date().toISOString();
+    const response = z.object({
+      items: z.array(z.unknown()), total: z.number().int().nonnegative(), limit: z.number().int().positive(),
+      offset: z.number().int().nonnegative(), has_more: z.boolean(),
+    }).parse(await remoteJson(`${scanBase}/agents?${params}`, { headers: headers() }));
+    const agents = response.items.flatMap(row => {
+      try { const agent = normalizeScan(row, fetchedAt); return agent.chainId === 56 ? [agent] : []; } catch { return []; }
+    });
+    return { agents, total: response.total, offset: response.offset, limit: response.limit, hasMore: response.has_more, warnings: [], partial: agents.length !== response.items.length, fetchedAt };
+  }, 60000);
+}
 export const categorySearch: Record<Category, string> = { rebalancing: "rebalanc", grid: "grid", yield: "yield", health: "health factor" };
 class ScanProvider implements AgentProvider {
   name = "8004scan";
@@ -32,7 +65,7 @@ class StudioProvider implements AgentProvider {
     const result = await Promise.allSettled(urls.map(async url => {
       const card = z.object({ name: z.string(), description: z.string(), url: z.string(), skills: z.array(z.object({ id: z.string(), name: z.string(), description: z.string().optional() })).optional() }).parse(await remoteJson(url));
       const text = `${card.name} ${card.description} ${JSON.stringify(card.skills)}`;
-      return { id: `studio-${Buffer.from(url).toString("base64url")}`, tokenId: "", chainId: 56, name: card.name, description: card.description, categories: classify(text), assets: mentioned(text, assets), protocols: mentioned(text, protocols), capabilities: card.skills?.map(s => s.name) ?? [], owner: null, agentWallet: null, registered: false, verified: false, feedbackCount: null, feedbackAverage: null, risk: "unknown", pricing: null, performance: null, active: true, endpoint: safeLink(url), website: null, interfaces: ["A2A"], source: "BNB Agent Studio", sourceUrl: url, updatedAt: null, fetchedAt: new Date().toISOString(), registrationTx: null } satisfies Agent;
+      return { id: `studio-${Buffer.from(url).toString("base64url")}`, tokenId: "", chainId: 56, name: card.name, description: card.description, categories: classify(text), assets: mentioned(text, assets), protocols: mentioned(text, protocols), capabilities: card.skills?.map(s => s.name) ?? [], owner: null, agentWallet: null, registered: false, verified: false, feedbackCount: null, feedbackAverage: null, risk: "unknown", pricing: null, performance: null, active: true, endpoint: safeLink(url), website: null, interfaces: ["A2A"], source: "BNB Agent Studio", sourceUrl: url, updatedAt: null, fetchedAt: new Date().toISOString(), registrationTx: null, evidence: { identityRegistered: false, interfacePublished: true, endpointLive: true, hiringCompatible: false, provenDelivery: false, observedAt: new Date().toISOString() } } satisfies Agent;
     }));
     if (result.some(r => r.status === "rejected")) throw new PartialRegistryError(result.flatMap(r => r.status === "fulfilled" ? [r.value] : []));
     return result.map(r => (r as PromiseFulfilledResult<Agent>).value);

@@ -11,12 +11,13 @@ test("live discovery, intent, detail, compatible comparison and account boundary
   await page.getByLabel("What would you like an agent to do?").fill("I have 5,000 USDT and want low-risk yield.");
   await page.getByRole("button", { name: "Find my agent" }).click();
   await expect(page.locator(".intent-summary")).toContainText("low risk requested", { timeout: 40000 });
-  await expect(page.getByText("No agent meets every requirement yet.")).toBeVisible();
-  await expect(page.locator(".agent-card").first()).toBeVisible();
-  await page.locator(".agent-card").nth(0).locator(".compare-toggle").click();
+  await expect(page.getByText("No agent meets every requested condition on this page.")).toBeVisible();
+  const comparable = page.locator(".agent-card").filter({ hasText: "Yield Optimisation" });
+  await expect(comparable.nth(1)).toBeVisible();
+  await comparable.nth(0).locator(".compare-toggle").click();
   await expect(page.locator(".compare-dock").getByRole("link", { name: "Choose a second agent" })).toHaveAttribute("href", /\/category\//);
   await expect(page.locator(".compare-dock").getByRole("link", { name: "Compare agents" })).toHaveCount(0);
-  await page.locator(".agent-card").nth(1).locator(".compare-toggle").click();
+  await comparable.nth(1).locator(".compare-toggle").click();
   await page.locator(".compare-dock").getByRole("link", { name: "Compare agents" }).click();
   await expect(page.locator(".comparison-table")).toBeVisible({ timeout: 30000 });
   await expect(page.getByRole("row", { name: /Risk assessment/ })).toContainText("Not available");

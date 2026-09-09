@@ -35,7 +35,7 @@ baw wallet status --json
 
 Canlı `/api/v1/stats/global` sorgusunda BSC için 311.467 kayıt, 29.400 A2A metadata kaydı, 5.646 MCP metadata kaydı gözlendi. Bunlar 9 Eylül tarihli gözlemdir; arayüzdeki sayılar canlı kaynaktan yenilenir. A2A/MCP kümeleri örtüşebilir. Metadata servis erişilebilirliği, imzalı teklif, başarılı teslimat veya kaliteyi kanıtlamaz.
 
-Binera iki alanı ayırır: servis uyumluluğu kontrol edilen küçük Research marketplace ve sınırlı arama penceresini gösteren Browse registry. Registry ekranına kaynaklı toplamlar eklendi; 15 dakika cache kullanılır. Tüm yüz binlerce kaydı taramak, API kotasını tüketip işe alınabilirliği kanıtlamaz.
+Binera keeps two surfaces separate. The Research marketplace contains a small set that passed recent service and payment-wallet compatibility checks. Browse full registry uses 8004scan source totals and server-side pagination over active BSC identities, exposing up to the provider's documented 10,008-record shallow-offset boundary. It does not download hundreds of thousands of records into the browser or label registration as hireability. Identity, published A2A/MCP endpoint, endpoint health, Binera-compatible hiring and verified delivery are shown as separate evidence levels.
 
 Kaynak sayfası katılımcı erişimini 500/dakika ve 100.000/gün diye açıklıyor. [Güncel Developer Hub](https://8004scan.io/developers) ise Free için 600/dakika, 100.000/gün; Pro için 3.000/dakika, 3.000.000/gün gösteriyor. Anonim canlı yanıt başlıklarında 30/dakika ve 1.000/gün görüldü. Hesabına uygulanacak gerçek kota yanıt başlıkları ve sağlayıcı onayıyla belirlenir.
 

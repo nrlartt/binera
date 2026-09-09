@@ -29,10 +29,10 @@ npm start
 
 ## Implemented capabilities (see verification limits below)
 
-- Live, server-side 8004scan discovery combining most-reviewed and recently-updated records with bounded caches, independently refreshable agent details and explicit provider errors.
+- Live, server-side 8004scan discovery with source totals, bounded offset pagination over active BSC identities, independently refreshable agent details and explicit provider errors.
 - Rebalancing, Grid Trading, Yield Optimisation and Health Factor Monitoring have identical discovery, filtering, detail, comparison and activation paths.
 - Natural-language keyword interpretation works without credentials. Optional OpenAI Responses structured output extracts constraints only. Invalid, timed-out or unavailable model responses fall back to rules. Explicit low-risk constraints cannot be weakened by the model.
-- Deterministic ranking, stable ID tie breaks, asset/protocol eligibility, and evidence-based explanations. Rankings are over a bounded discovery window, not a claim to exhaustively rank the entire registry.
+- Deterministic ranking, stable ID tie breaks, asset/protocol eligibility, and evidence-based explanations. Registry cards separate identity registration, published A2A/MCP metadata, endpoint health, Binera hiring compatibility and verified completed delivery.
 - Unknown investment risk never satisfies a low-risk request. Related agents are labelled as unconfirmed matches. Source descriptions remain publisher claims.
 - Compare up to three agents sharing a category; fetch fresh details before rendering comparison. Missing fees, risk, APY and execution history remain unavailable.
 - Compatible Studio sellers support live A2A negotiation. The server reads `getAgentWallet` from the identity registry, checks the signed quote's task/hash/expiry/chain/contracts/currency and verifies the provider's EIP-191 signature. The seller's quoted terms are shown before approval.
@@ -57,6 +57,18 @@ For optional read-only price negotiation set `LIVE_AGENT_ID` to an actual regist
 
 The requested low-risk USDT journey currently returns related agents with missing risk evidence, not falsely confirmed low-risk recommendations. Funding, scoped session registration, execution receipts, delivery and revocation **have not been exercised with a funded user account**. They require a passkey-capable browser, BNB for registration/relay fees, U for the quoted job and explicit user approval. These are release gates, not passing tests.
 
+## Competition qualification boundaries
+
+The [official tracks](https://www.bnbchain.org/en/hackathons/smart-money-era?tab=tracks) and [resources](https://www.bnbchain.org/en/hackathons/smart-money-era?tab=resources) are treated as evidence requirements, not marketing copy:
+
+- Main track: all four categories have equal discovery, comparison and activation surfaces. The default marketplace only includes BSC identities that recently passed Binera's service and payment-wallet checks. Browse full registry is a discovery layer and clearly labels identities that are not proven hireable.
+- Altana: buyer-side scoped sessions expose call allowlists, token and BNB caps, expiry, Keystore reads and revocation controls. Prize qualification still requires public explorer receipts proving an agent-owned Altana wallet, grant, session-key execution and revoke. Tests cannot substitute for those transactions.
+- TermiX: no TermiX integration is required for eligibility. The uncompleted Agent Advantage Report must contain three real agent-versus-human task pairs with time, total cost, quality scoring and raw outputs; at least one must cover trading, equities or security.
+- PancakeSwap: live v3 pool reads support LP research, but prize evidence must demonstrate a measured benefit to a real trader or liquidity provider. A price card or hypothetical return is insufficient.
+- 8004scan: identity, endpoint publication, endpoint health, hiring compatibility and verified delivery remain separate. An API key increases quota; it does not make registrations functional.
+
+Run `npm run check:release` to keep these owner-controlled evidence gaps visible. Do not fill evidence fields with test fixtures or unsupported claims.
+
 ## Deployment
 
 Deploy to Railway using the included `railway.json` and Dockerfile. Follow [the Railway deployment guide](docs/railway-deploy-tr.md) for login, project linking, runtime variables and HTTPS domain commands. Railway runs `node server.js`, checks `/` for startup and restarts failed processes. Monitor `/api/health` separately for live dependency health.
@@ -78,7 +90,7 @@ The marketplace now includes category-specific research preparation, live Pancak
 
 Profile name/bio are local device preferences, scoped to the connected passkey marketplace account. Profile is unavailable until that account is connected. Saved agent IDs are device-wide; neither feature is a public profile, server login or cross-device sync. Shared comparisons include only registry IDs. Shared search links include the submitted query and filters, so review them before sharing. The health preview reports Venus Core account liquidity/shortfall, not a health-factor ratio or coverage of isolated pools. Pool previews do not compute returns or APR. Sources: [Venus contracts](https://docs-v4.venus.io/technical-reference/contracts-overview), [official Unitroller deployment](https://github.com/VenusProtocol/venus-protocol/blob/master/deployments/bscmainnet/Unitroller.json).
 
-- No database or server custody. This browser stores public selection/session/job references; chain reads are authoritative. Export public activity references. Clearing local storage removes agent/job labels; use Altana's explorer to inspect all account keys. SDK account recovery requires onchain registration unless a public credential handle is retained on the device.
+- No database or server custody. This browser stores public selection/session/job references; chain reads are authoritative. Export public activity references. Clearing local storage removes agent/job labels; use Altana's explorer to inspect all account keys. The retained public credential handle is the safest recovery path; the two-signature recovery flow can reconstruct it from the original passkey before the first onchain operation.
 - Sessions use exact contract/function allowlists; arguments such as the seller are chosen by the application, not constrained individually by the session validator. Token approval is for the exact budget. Revocation does not undo completed work or cancel funded escrow.
 - Monitor submitted jobs: optimistic escrow has a dispute window. The UI exposes dispute and settlement actions and the contracts enforce their windows. Failed/rejected/time-out responses never count as confirmation. Pending submissions must be reconciled before resubmission.
 - Caches and API rate guards are bounded per process. Configure an ingress/WAF rate limit and provider spending limits for a multi-instance public deployment. Anonymous discovery quotas can be increased with a server-side `SCAN_API_KEY`.
@@ -121,6 +133,6 @@ Public-reference imports validate account/session binding and strip unknown fiel
 
 ## Focused catalogue and user docs
 
-The default research marketplace uses a bounded operator-reviewed set of real BSC registry IDs from the service audit. Each is refreshed and checked for a supported live service and registered payment identity before being shown. `MARKETPLACE_AGENT_IDS` can replace this set (maximum 20). Failed checks temporarily exclude a provider and show a warning; signed quotes and completed delivery remain separate checks. The wider discovery catalogue is available under Browse registry (`catalog=registry`).
+The default research marketplace uses a bounded operator-reviewed set of real BSC registry IDs from the service audit. Each is refreshed and checked for a supported live service and registered payment identity before being shown. `MARKETPLACE_AGENT_IDS` can replace this set (maximum 20). Failed checks temporarily exclude a provider and show a warning; signed quotes and completed delivery remain separate checks. Browse full registry (`catalog=registry`) reads 12 records per source page, exposes the source total and supports the first 10,008 offset-paginated matches. This bound follows the provider's documented shallow-pagination limit; direct identity lookup remains available.
 
 The public `/docs` page explains discovery, hiring, funding, delivery, troubleshooting and privacy. Activation starts with a research goal; customization and data previews are optional disclosures. After quoting, users review the fee and terms, or edit the task to invalidate the quote.

@@ -1,9 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
-import type { Agent } from "@/lib/domain";
+import { agentEvidence, type Agent } from "@/lib/domain";
 import { loadActivity } from "@/lib/activity";
 import { matchesJob } from "@/lib/job-match";
 import { api, dateLabel, SourceLink } from "./ui";
+import { AgentEvidenceTrack } from "./agent-evidence";
 
 export function EvidenceStatus({ agent }: { agent: Agent }) {
   const [service, setService] = useState<{ available: boolean; observedAt: string; message: string } | null>(null);
@@ -25,5 +26,12 @@ export function EvidenceStatus({ agent }: { agent: Agent }) {
     setDeliveries(outcomes.flatMap(r => r.status === "fulfilled" && r.value ? [r.value] : [])); setChecked(true); setBusy(false);
     if (outcomes.some(r => r.status === "rejected")) setError("Some saved delivery references could not be checked.");
   }
-  return <section><h2>Trust, one check at a time</h2><div className="evidence-grid"><div><span>Identity</span><strong>{agent.registered ? "Registered identity" : "Registration not established"}</strong><p>{agent.verified ? "The source also reports verification." : "Registration is not an endorsement."}</p><SourceLink href={agent.sourceUrl}>Identity source</SourceLink></div><div><span>Service</span><strong>{service ? service.available ? "Service checked" : "Hiring unavailable" : "Not checked here"}</strong><p>{service?.message || "A published endpoint does not establish availability."}</p>{service && <small>{dateLabel(service.observedAt)}</small>}</div><div><span>Signed quote</span><strong>{quoteUntil > now ? "Signature verified" : quoteUntil ? "Quote expired" : "Not requested here"}</strong><p>{quoteUntil ? `Valid until ${dateLabel(new Date(quoteUntil).toISOString())}` : "Request a quote in Review activation. Payment identity and signature are checked."}</p></div><div><span>Completed delivery</span><strong>{deliveries.length ? `${deliveries.length} verified saved jobs` : checked ? "No completed delivery verified" : "Not checked here"}</strong><p>Checks up to 10 saved references against onchain jobs and deliverable hashes. This is not a global success rate or a quality rating.</p>{deliveries.map(id => <span key={id}>Job #{id} </span>)}</div></div><button className="button" disabled={busy} onClick={check}>{busy ? "Checking evidence…" : "Check service & saved deliveries"}</button>{error && <p role="status">{error}</p>}</section>;
+  const sourceEvidence = agentEvidence(agent);
+  const evidence = { ...sourceEvidence,
+    endpointLive: service ? service.available : sourceEvidence.endpointLive,
+    hiringCompatible: service ? service.available : sourceEvidence.hiringCompatible,
+    provenDelivery: deliveries.length > 0,
+    observedAt: service?.observedAt ?? sourceEvidence.observedAt,
+  };
+  return <section><h2>Trust, one check at a time</h2><AgentEvidenceTrack agent={agent} evidence={evidence} /><div className="evidence-grid"><div><span>Identity</span><strong>{agent.registered ? "Registered identity" : "Registration not established"}</strong><p>{agent.verified ? "The source also reports verification." : "Registration is not an endorsement."}</p><SourceLink href={agent.sourceUrl}>Identity source</SourceLink></div><div><span>Service</span><strong>{service ? service.available ? "Live and hiring-compatible" : "Hiring unavailable" : sourceEvidence.endpointLive ? "Registry health check passed" : "Not checked here"}</strong><p>{service?.message || "A published endpoint does not establish Binera compatibility."}</p>{(service?.observedAt || sourceEvidence.observedAt) && <small>{dateLabel(service?.observedAt ?? sourceEvidence.observedAt)}</small>}</div><div><span>Signed quote</span><strong>{quoteUntil > now ? "Signature verified" : quoteUntil ? "Quote expired" : "Not requested here"}</strong><p>{quoteUntil ? `Valid until ${dateLabel(new Date(quoteUntil).toISOString())}` : "Request a quote in Review activation. Payment identity and signature are checked."}</p></div><div><span>Completed delivery</span><strong>{deliveries.length ? `${deliveries.length} verified saved jobs` : checked ? "No completed delivery verified" : "Not checked here"}</strong><p>Checks up to 10 saved references against onchain jobs and deliverable hashes. This is not a global success rate or a quality rating.</p>{deliveries.map(id => <span key={id}>Job #{id} </span>)}</div></div><button className="button" disabled={busy} onClick={check}>{busy ? "Checking evidence…" : "Check service & saved deliveries"}</button>{error && <p role="status">{error}</p>}</section>;
 }

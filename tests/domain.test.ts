@@ -27,6 +27,17 @@ test("untrusted claims cannot create audited metrics", () => {
   const agent = normalizeScan({ token_id: "10", chain_id: 56, name: "TEST low-risk yield 900% APY", description: "USDT yield", total_feedbacks: 0, average_score: 100, is_verified: false, performance: 900, risk: "low" });
   assert.equal(agent.risk, "unknown"); assert.equal(agent.performance, null); assert.equal(agent.feedbackAverage, null); assert.equal(agent.verified, false);
 });
+test("registry evidence levels remain separate", () => {
+  const published = normalizeScan({ token_id: "11", chain_id: 56, name: "Endpoint agent", supported_protocols: ["A2A"], a2a_endpoint: "https://agent.example/.well-known/agent-card.json" });
+  assert.equal(published.evidence?.identityRegistered, true);
+  assert.equal(published.evidence?.interfacePublished, true);
+  assert.equal(published.evidence?.endpointLive, false);
+  assert.equal(published.evidence?.hiringCompatible, false);
+  assert.equal(published.evidence?.provenDelivery, false);
+  const healthy = normalizeScan({ token_id: "12", chain_id: 56, name: "Healthy endpoint agent", supported_protocols: ["MCP"], mcp_server: "https://mcp.example/", health_status: { overall_status: "healthy" }, endpoint_last_checked_at: "2026-09-09T00:00:00Z" });
+  assert.equal(healthy.evidence?.endpointLive, true);
+  assert.equal(healthy.evidence?.hiringCompatible, false);
+});
 test("registry preserves successful providers during upstream failure and deduplicates", async () => {
   const ok: AgentProvider = { name: "test-good", discover: async () => [fixture("a"), fixture("a")] };
   const bad: AgentProvider = { name: "test-failed", discover: async () => { throw new Error("unavailable"); } };

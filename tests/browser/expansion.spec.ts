@@ -26,6 +26,22 @@ test("research catalogue is distinct from the registry and docs are public", asy
   await expect(page.getByLabel("Display name")).toHaveCount(0);
 });
 
+test("full registry is paginated and keeps five evidence levels distinct", async ({ page, request }) => {
+  const response = await request.get("/api/discover?catalog=registry&page=1");
+  expect(response.status()).toBe(200);
+  const data = await response.json();
+  expect(data.total).toBeGreaterThan(10000);
+  expect(data.returned).toBeLessThanOrEqual(12);
+  expect(data.pages).toBeGreaterThan(1);
+  await page.goto("/?catalog=registry");
+  await expect(page.getByText("Browse full registry", { exact: true })).toBeVisible();
+  await page.getByText("How agent evidence is separated", { exact: true }).click();
+  for (const label of ["Registered identity", "Published A2A/MCP endpoint", "Live endpoint", "Binera-compatible hiring", "Proven delivery"]) {
+    await expect(page.locator(".evidence-guide").getByText(label, { exact: false })).toBeVisible();
+  }
+  await expect(page.locator(".agent-card").first().locator(".evidence-track span")).toHaveCount(5);
+});
+
 test("shared comparison sends identical tasks and preserves successful quotes", async ({ page }) => {
   const tasks: string[] = [];
   page.on("request", request => { if (request.url().endsWith("/api/quote") && request.method() === "POST") tasks.push(request.postDataJSON().task); });
