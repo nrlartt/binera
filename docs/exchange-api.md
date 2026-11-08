@@ -86,7 +86,9 @@ Browser wallets sign the same message through `personal_sign`; the Exchange page
 - A request past its `deadline` reads as `closed`, cannot accept offers, and its pending offers read as `rejected`.
 - Offer owners can withdraw a pending offer; the request owner can close an open request; listing owners can deactivate a listing.
 - Writes are rate-limited per client (10–20 per minute per route).
-- Records live in a single-instance file store (`.data/marketplace.json`, gitignored; override with `MARKETPLACE_STORE_PATH`). It is not replicated across instances and contains no secrets.
+- Records live in a SQLite database (`.data/marketplace.db`, gitignored; override with `MARKETPLACE_DB_PATH`). WAL mode is enabled, a legacy `marketplace.json` is imported once, and the file contains no secrets. On Railway or another container host, mount a persistent volume at the database directory; otherwise records reset on redeploy. `npm run worker` is optional because every exchange read also runs the expiry sweep.
+- `npm run worker` runs every minute and persists request/offer expiry transitions; the same sweep also runs on each read.
+- Optional outbound events: set `EXCHANGE_WEBHOOK_URL` (HTTPS; localhost HTTP is allowed for tests) and `EXCHANGE_WEBHOOK_SECRET`. Each event is POSTed as JSON with `X-Binera-Event` and `X-Binera-Signature: sha256=<HMAC-SHA256(body)>`; delivery is retried once on 5xx or network failure.
 - Signed records are public. Never put confidential information in a listing, request or offer; task text and terms of a funded job become public onchain.
 
 ## Verification helper

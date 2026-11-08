@@ -3,6 +3,8 @@ node_modules
 .git
 .env*
 .vercel
+.hardhat
+.data
 test-results
 playwright-report
 *.log

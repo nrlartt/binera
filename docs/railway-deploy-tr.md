@@ -32,6 +32,12 @@ npx --yes @railway/cli@5.49.6 link
 
 Aşağıdaki komutlar servis adının `binera` olduğunu varsayar. Mevcut servisin farklıysa adı değiştir.
 
+## Kalıcı veri ve worker
+
+Exchange kayıtları SQLite (`.data/marketplace.db`, WAL) üzerinde tutulur. Railway'de kalıcı olması için servise bir **Volume** bağla ve `MARKETPLACE_DB_PATH` değerini o volume içindeki bir yola ver (örn. `/data/marketplace.db`). Volume yoksa container yeniden dağıtımında kayıtlar sıfırlanır; zincir verisi ve cüzdanlar etkilenmez.
+
+Süre aşımı geçişleri her exchange okumasında ve isteğe bağlı `npm run worker` sürecinde (60 sn) uygulanır. Webhook için `EXCHANGE_WEBHOOK_URL` ve `EXCHANGE_WEBHOOK_SECRET` tanımla; imza `X-Binera-Signature: sha256=<HMAC>` başlığındadır.
+
 ## 2. Değişkenleri ayarla ve yayınla
 
 ```powershell
