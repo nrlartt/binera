@@ -15,7 +15,7 @@ npm ci
 npm run dev
 ```
 
-Open http://localhost:3000. Anonymous 8004scan discovery works without an API key. Optional server-only settings are documented in [.env.example](.env.example). Copy that file to `.env.local` to configure them. Never prefix secrets with `NEXT_PUBLIC_`.
+Open http://localhost:3000. Anonymous 8004scan discovery works without an API key. Optional server-only settings are documented in [.env.example](.env.example). Copy that file to `.env.local` to configure them. Never prefix secrets with `NEXT_PUBLIC_`. The ready-to-fill operator checklist is in [docs/env-setup-tr.md](docs/env-setup-tr.md), and `npm run check:env` validates it without printing values.
 
 ```sh
 npm run typecheck

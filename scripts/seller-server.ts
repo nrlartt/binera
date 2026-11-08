@@ -6,6 +6,7 @@
  * The seller has to be registered on ERC-8004 with this wallet as its payment
  * wallet before Binera can hire it. This process never sends its key anywhere.
  */
+import "../src/lib/server/load-env";
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { createSeller } from "../src/lib/seller-runtime";
 

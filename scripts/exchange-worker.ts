@@ -4,6 +4,7 @@
  *
  *   npm run worker
  */
+import "../src/lib/server/load-env";
 import { marketplaceStore } from "../src/lib/server/marketplace-store";
 
 async function tick() {
