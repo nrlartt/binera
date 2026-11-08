@@ -32,12 +32,12 @@ test("records survive a new store instance on the same SQLite file", async () =>
   try {
     const first = new MarketplaceStore(file);
     await first.createListing(ownerA, listing, nonce("persist"));
-    first.close();
+    await first.close();
     const second = new MarketplaceStore(file);
     const snapshot = await second.snapshot();
     assert.equal(snapshot.listings.length, 1);
     assert.equal(snapshot.listings[0].owner, ownerA.toLowerCase());
-    second.close();
+    await second.close();
   } finally { await rm(dir, { recursive: true, force: true }); }
 });
 
@@ -54,7 +54,7 @@ test("the expiry sweep persists closed requests and rejects pending offers", asy
     assert.equal(snapshot.requests[0].status, "closed");
     assert.equal(snapshot.offers.find(item => item.id === offer.id)?.status, "rejected");
     assert.equal(await store.sweepExpired(), 0);
-    store.close();
+    await store.close();
   } finally { await rm(dir, { recursive: true, force: true }); }
 });
 

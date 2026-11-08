@@ -59,7 +59,7 @@ test("store creates a listing, denies a replayed nonce and exposes events", asyn
     assert.equal(snapshot.listings.length, 1);
     assert.equal(snapshot.events[0].kind, "listing");
     assert.match(snapshot.events[0].summary, /BNB LP range research/);
-  } finally { store.close(); await rm(dir, { recursive: true, force: true }); }
+  } finally { await store.close(); await rm(dir, { recursive: true, force: true }); }
 });
 
 test("request, offer and acceptance follow ownership rules", async () => {
@@ -81,7 +81,7 @@ test("request, offer and acceptance follow ownership rules", async () => {
     const snapshot = await store.snapshot({ requestId: request.id });
     assert.equal(snapshot.offers.length, 1);
     assert.equal(snapshot.events[0].kind, "accepted");
-  } finally { store.close(); await rm(dir, { recursive: true, force: true }); }
+  } finally { await store.close(); await rm(dir, { recursive: true, force: true }); }
 });
 
 test("an expired request reads as closed and rejects new offers", async () => {
@@ -98,7 +98,7 @@ test("an expired request reads as closed and rejects new offers", async () => {
     await assert.rejects(() => store.createOffer(ownerB, { requestId: request.id, price: "1", deliveryHours: 1, terms: "Too late for this request." }, nonce("expired-offer")), /deadline/i);
     const snapshot = await store.snapshot({ requestId: request.id });
     assert.equal(snapshot.requests[0].status, "closed");
-  } finally { store.close(); await rm(dir, { recursive: true, force: true }); }
+  } finally { await store.close(); await rm(dir, { recursive: true, force: true }); }
 });
 
 test("closing a request rejects pending offers and is owner-only", async () => {
@@ -118,7 +118,7 @@ test("closing a request rejects pending offers and is owner-only", async () => {
     assert.equal(result.rejectedOffers, 1);
     const snapshot = await store.snapshot({ requestId: request.id });
     assert.equal(snapshot.offers.find(item => item.id === offer.id)?.status, "rejected");
-  } finally { store.close(); await rm(dir, { recursive: true, force: true }); }
+  } finally { await store.close(); await rm(dir, { recursive: true, force: true }); }
 });
 
 test("listings can be deactivated by their owner and disappear from public reads", async () => {
@@ -135,7 +135,7 @@ test("listings can be deactivated by their owner and disappear from public reads
     await assert.rejects(() => store.closeListing(ownerB, { listingId: created.id }, nonce("listing-wrong")), /owner/i);
     await store.closeListing(ownerA, { listingId: created.id }, nonce("listing-right"));
     assert.equal((await store.snapshot()).listings.length, 0);
-  } finally { store.close(); await rm(dir, { recursive: true, force: true }); }
+  } finally { await store.close(); await rm(dir, { recursive: true, force: true }); }
 });
 
 test("a provider can withdraw a pending offer but not an accepted one", async () => {
@@ -153,7 +153,7 @@ test("a provider can withdraw a pending offer but not an accepted one", async ()
     const withdrawn = await store.withdrawOffer(ownerB, { offerId: offer.id }, nonce("withdraw-right"));
     assert.equal(withdrawn.status, "withdrawn");
     await assert.rejects(() => store.acceptOffer(ownerA, { offerId: offer.id }, nonce("withdraw-accept")), /no longer pending/i);
-  } finally { store.close(); await rm(dir, { recursive: true, force: true }); }
+  } finally { await store.close(); await rm(dir, { recursive: true, force: true }); }
 });
 
 test("a multi-slot request fills gradually and rejects pending offers once full", async () => {  const { store, dir } = await tempStore();
@@ -179,7 +179,7 @@ test("a multi-slot request fills gradually and rejects pending offers once full"
     const snapshot = await store.snapshot({ requestId: request.id });
     assert.equal(snapshot.offers.find(offer => offer.id === third.id)?.status, "rejected");
     await assert.rejects(() => store.createOffer(ownerB, { requestId: request.id, price: "1", deliveryHours: 1, terms: "Offer after the bounty is full." }, nonce("bounty-late")), /no longer open/i);
-  } finally { store.close(); await rm(dir, { recursive: true, force: true }); }
+  } finally { await store.close(); await rm(dir, { recursive: true, force: true }); }
 });
 
 test("closed requests reject new offers and category filters stay exact", async () => {  const { store, dir } = await tempStore();
@@ -199,5 +199,5 @@ test("closed requests reject new offers and category filters stay exact", async 
     assert.equal(filtered.requests[0].category, "grid");
     const empty = await store.snapshot({ category: "health" });
     assert.equal(empty.requests.length, 0);
-  } finally { store.close(); await rm(dir, { recursive: true, force: true }); }
+  } finally { await store.close(); await rm(dir, { recursive: true, force: true }); }
 });

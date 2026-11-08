@@ -3,7 +3,7 @@
  * Public records only; settlement stays on chain. A legacy JSON store is
  * imported once when present so existing deployments keep their data.
  */
-import { DatabaseSync } from "node:sqlite";
+import type { DatabaseSync } from "node:sqlite";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { z } from "zod";
@@ -61,11 +61,18 @@ const parseJson = <T>(value: unknown, fallback: T): T => {
 };
 
 export class MarketplaceStore {
-  private db: DatabaseSync;
-  private ready: Promise<void>;
+  private db!: DatabaseSync;
+  private readyPromise: Promise<void> | null = null;
 
-  constructor(private file: string = process.env.MARKETPLACE_DB_PATH || path.join(process.cwd(), ".data", "marketplace.db")) {
-    this.db = new DatabaseSync(file);
+  constructor(private file: string = process.env.MARKETPLACE_DB_PATH || path.join(process.cwd(), ".data", "marketplace.db")) {}
+
+  private ready() { return this.readyPromise ??= this.init(); }
+
+  /** Opens the database on first use so importing this module never touches SQLite during a build. */
+  private async init() {
+    const { DatabaseSync } = await import("node:sqlite");
+    await fs.mkdir(path.dirname(this.file), { recursive: true });
+    this.db = new DatabaseSync(this.file);
     this.db.exec("PRAGMA journal_mode = WAL; PRAGMA busy_timeout = 5000;");
     this.db.exec(`
       CREATE TABLE IF NOT EXISTS listings (
@@ -95,7 +102,7 @@ export class MarketplaceStore {
       CREATE INDEX IF NOT EXISTS idx_offers_request ON offers(request_id, status);
       CREATE INDEX IF NOT EXISTS idx_events_at ON events(at);
     `);
-    this.ready = this.importLegacy();
+    await this.importLegacy();
   }
 
   private async importLegacy() {
@@ -159,7 +166,7 @@ export class MarketplaceStore {
   }
 
   async sweepExpired(now = new Date()) {
-    await this.ready;
+    await this.ready();
     const stamp = now.toISOString();
     return this.transaction(() => {
       const expired = this.db.prepare("SELECT id, owner, title FROM requests WHERE status = 'open' AND deadline <= ?").all(stamp) as { id: string; owner: string; title: string }[];
@@ -189,11 +196,11 @@ export class MarketplaceStore {
   }
 
   async eventsSince(since: string) {
-    await this.ready;
+    await this.ready();
     return (this.db.prepare("SELECT * FROM events WHERE at > ? ORDER BY at ASC LIMIT 100").all(since) as Row[]).map(this.rowEvent);
   }
 
-  close() { this.db.close(); }
+  async close() { if (!this.readyPromise) return; await this.ready(); this.db.close(); }
 
   private rowListing = (row: Row): Listing => listingSchema.parse({
     id: row.id, owner: row.owner, createdAt: row.created_at, active: Boolean(row.active), name: row.name,
@@ -214,7 +221,7 @@ export class MarketplaceStore {
 
   createListing(owner: string, payload: unknown, nonce: string) {
     const data = listingPayloadSchema.parse(payload);
-    return this.ready.then(() => {
+    return this.ready().then(() => {
       const output = this.transaction(() => {
         this.consumeNonce(nonce, owner);
         const count = Number((this.db.prepare("SELECT COUNT(*) AS n FROM listings WHERE owner = ? AND active = 1").get(owner) as { n: number }).n);
@@ -232,7 +239,7 @@ export class MarketplaceStore {
     const data = requestPayloadSchema.parse(payload);
     if (Date.parse(data.deadline) <= Date.now()) throw new PublicError("Choose a deadline in the future.", 400);
     if (Date.parse(data.deadline) > Date.now() + 90 * 24 * 60 * 60 * 1000) throw new PublicError("Choose a deadline within 90 days.", 400);
-    return this.ready.then(() => {
+    return this.ready().then(() => {
       const output = this.transaction(() => {
         this.consumeNonce(nonce, owner);
         const open = Number((this.db.prepare("SELECT COUNT(*) AS n FROM requests WHERE owner = ? AND status = 'open'").get(owner) as { n: number }).n);
@@ -248,7 +255,7 @@ export class MarketplaceStore {
 
   createOffer(owner: string, payload: unknown, nonce: string) {
     const data = offerPayloadSchema.parse(payload);
-    return this.ready.then(() => {
+    return this.ready().then(() => {
       const output = this.transaction(() => {
         this.consumeNonce(nonce, owner);
         const request = this.db.prepare("SELECT * FROM requests WHERE id = ?").get(data.requestId) as Row | undefined;
@@ -270,7 +277,7 @@ export class MarketplaceStore {
 
   acceptOffer(owner: string, payload: unknown, nonce: string) {
     const data = acceptPayloadSchema.parse(payload);
-    return this.ready.then(() => {
+    return this.ready().then(() => {
       const result = this.transaction(() => {
         this.consumeNonce(nonce, owner);
         const offerRow = this.db.prepare("SELECT * FROM offers WHERE id = ?").get(data.offerId) as Row | undefined;
@@ -301,7 +308,7 @@ export class MarketplaceStore {
 
   closeRequest(owner: string, payload: unknown, nonce: string) {
     const data = requestClosePayloadSchema.parse(payload);
-    return this.ready.then(() => {
+    return this.ready().then(() => {
       const output = this.transaction(() => {
         this.consumeNonce(nonce, owner);
         const request = this.db.prepare("SELECT * FROM requests WHERE id = ?").get(data.requestId) as Row | undefined;
@@ -320,7 +327,7 @@ export class MarketplaceStore {
 
   closeListing(owner: string, payload: unknown, nonce: string) {
     const data = listingClosePayloadSchema.parse(payload);
-    return this.ready.then(() => {
+    return this.ready().then(() => {
       const output = this.transaction(() => {
         this.consumeNonce(nonce, owner);
         const listing = this.db.prepare("SELECT * FROM listings WHERE id = ?").get(data.listingId) as Row | undefined;
@@ -337,7 +344,7 @@ export class MarketplaceStore {
 
   withdrawOffer(owner: string, payload: unknown, nonce: string) {
     const data = offerWithdrawPayloadSchema.parse(payload);
-    return this.ready.then(() => {
+    return this.ready().then(() => {
       const output = this.transaction(() => {
         this.consumeNonce(nonce, owner);
         const offer = this.db.prepare("SELECT * FROM offers WHERE id = ?").get(data.offerId) as Row | undefined;
