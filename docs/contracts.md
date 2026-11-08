@@ -1,6 +1,17 @@
 # On-chain protocol contracts
 
-Four Solidity contracts back the remaining marketplace primitives that an off-chain index cannot enforce. They are written and tested against the local Hardhat EVM. **They are not deployed anywhere yet.** No UI reads them until operator addresses are configured, so no fake on-chain state is shown.
+Four Solidity contracts back the remaining marketplace primitives that an off-chain index cannot enforce. They are written and tested against the local Hardhat EVM, and deployed on **BSC testnet (chain 97)**. Mainnet is not deployed yet. No UI reads them until operator addresses are configured, so no fake on-chain state is shown.
+
+## Current testnet deployment
+
+| Contract | Address |
+| --- | --- |
+| `BineraStake` | `0x19077Fec4D3eE64546E1D1e350ceDe51f7De13bb` |
+| `BineraReputation` | `0xC4A0e379468F686529898f12E66605BBe01A2dc7` |
+| `BineraArbitration` | `0xD88f1087F17De5702E734a62fD5cDC95c54E8116` |
+| `BineraBountyVault` | `0x9338B39FD6DA8bF1c230bE26A5A73F33800a2c0d` |
+
+Payment token: test-only `MockERC20` at `0xa10409bFBCf29cE043525399C6BC39Aca457B8dA`. Deployer `0xbAa1…090f`, arbiter `0x5d49…3b8f`. A 1 mU stake and a two-slot bounty were executed to verify reads. Full hashes: `submission/evidence/testnet-protocol.json`. These are testnet-only records.
 
 | Contract | Purpose | Trust boundary |
 | --- | --- | --- |

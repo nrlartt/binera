@@ -1,0 +1,33 @@
+{
+  "network": "BSC Testnet",
+  "chainId": 97,
+  "deployedAt": "2026-11-08T20:29:19.975Z",
+  "deployer": "0xbAa1e4c5169250f7bCe3a860301EEE98F485090f",
+  "arbiter": "0x5d49206335Fd9d51358aBeB551365464D9c83b8f",
+  "paymentToken": {
+    "address": "0xa10409bFBCf29cE043525399C6BC39Aca457B8dA",
+    "symbol": "mU",
+    "note": "Test-only MockERC20 with 18 decimals, deployed because the mainnet U token has no code on testnet. Never use on mainnet."
+  },
+  "contracts": {
+    "stake": { "address": "0x19077Fec4D3eE64546E1D1e350ceDe51f7De13bb", "txHash": "0xce30c1bc320e2f69a33546bb663fb79161b1536aa1c9450d9100c1991bc49d64", "block": 141597491 },
+    "reputation": { "address": "0xC4A0e379468F686529898f12E66605BBe01A2dc7", "txHash": "0xe0ba4b4f2ec5c2c782cdf41007e01ffda0713444464096b72f9621958e09cde5", "block": 141597504 },
+    "arbitration": { "address": "0xD88f1087F17De5702E734a62fD5cDC95c54E8116", "txHash": "0x572ef4e9975ca18b7da5b6e00a6f6b34ffa92708f6998b62f65195a4dc6fb7ac", "block": 141597508 },
+    "vault": { "address": "0x9338B39FD6DA8bF1c230bE26A5A73F33800a2c0d", "txHash": "0x41b5e1632f35f3369a43f001b9635306c562aac2be920490f24154cd17747f6e", "block": 141597512 }
+  },
+  "mockTokenDeployment": { "txHash": "0x3cab57551d59acd3d153239f0411666f208380ec34a0e0e2d869cb794e506b95", "block": 141597482 },
+  "liveActions": {
+    "stake": { "txHash": "0x87f5deb578b2efa28cff132b689e7371a84c605ceb4078b84794c58fd24a121a", "amount": "1", "asset": "mU", "lockSeconds": 3600 },
+    "bounty": { "txHash": "0xf35fb154d7415d1135393082c530805db5e2384fdf2788d3dd7a5dae4e2b475a", "rewardPerSlot": "0.5", "slots": 2 }
+  },
+  "observedState": {
+    "source": "GET /api/protocol",
+    "chainId": 97,
+    "contractStates": ["live", "live", "live", "live"],
+    "totalStaked": "1000000000000000000",
+    "bountyCount": 1,
+    "bountySlots": 2
+  },
+  "explorer": "https://testnet.bscscan.com",
+  "note": "Public testnet records only. No private keys, seed phrases or API secrets are included. Mainnet deployment has not been performed."
+}
