@@ -14,6 +14,7 @@
     "compile:contracts": "hardhat compile",
     "export:artifacts": "node scripts/export-contract-artifacts.cjs",
     "deploy:protocol": "hardhat run scripts/deploy-protocol.cjs",
+    "seller": "tsx scripts/seller-server.ts",
     "test:live": "tsx scripts/live-check.ts",
     "test:e2e": "playwright test",
     "audit:services": "tsx scripts/service-audit.ts",

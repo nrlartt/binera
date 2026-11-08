@@ -14,14 +14,14 @@ export function canonicalJson(value: unknown): string {
   const sort = (v: unknown): unknown => Array.isArray(v) ? v.map(sort) : v !== null && typeof v === "object" ? Object.fromEntries(Object.entries(v).sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0).map(([key, item]) => [key, sort(item)])) : v;
   return JSON.stringify(sort(value)).replace(/[\u007f-\uffff]/g, ch => `\\u${ch.charCodeAt(0).toString(16).padStart(4, "0")}`);
 }
-function sanitize(text: string) { return [...text.replaceAll("[", "(").replaceAll("]", ")")].filter(c => c.charCodeAt(0) >= 32 || c === "\t" || c === "\n").join(""); }
+export function sanitizeQuoteText(text: string) { return [...text.replaceAll("[", "(").replaceAll("]", ")")].filter(c => c.charCodeAt(0) >= 32 || c === "\t" || c === "\n").join(""); }
 export function decodeQuote(input: unknown, task: string, now = Math.floor(Date.now() / 1000)) {
   const q = quoteSchema.parse(input); const terms = q.response.terms; const addresses = erc8183Addresses(56);
   if (q.response.quote_expires_at <= now + 30 || q.response.negotiated_at > now + 60) throw new Error("This quote expired or has an invalid timestamp. Request another quote.");
   if (q.request.task_description !== task) throw new Error("The quote does not match your task.");
   if (getAddress(q.verifying_contract) !== getAddress(addresses.commerce) || getAddress(terms.currency) !== getAddress(addresses.paymentToken)) throw new Error("This quote uses an unsupported payment contract.");
   if (BigInt(terms.price) <= 0n) throw new Error("This agent requires a different activation method.");
-  const content = { version: 1, negotiated_at: q.response.negotiated_at, quote_expires_at: q.response.quote_expires_at, task: sanitize(task), terms: { deliverables: sanitize(terms.deliverables), quality_standards: sanitize(terms.quality_standards), ...(terms.success_criteria?.length ? { success_criteria: terms.success_criteria.map(sanitize) } : {}) }, price: terms.price, currency: terms.currency, chain_id: 56, verifying_contract: getAddress(q.verifying_contract) };
+  const content = { version: 1, negotiated_at: q.response.negotiated_at, quote_expires_at: q.response.quote_expires_at, task: sanitizeQuoteText(task), terms: { deliverables: sanitizeQuoteText(terms.deliverables), quality_standards: sanitizeQuoteText(terms.quality_standards), ...(terms.success_criteria?.length ? { success_criteria: terms.success_criteria.map(sanitizeQuoteText) } : {}) }, price: terms.price, currency: terms.currency, chain_id: 56, verifying_contract: getAddress(q.verifying_contract) };
   const hash = keccak256(toHex(canonicalJson(content)));
   if (hash.toLowerCase() !== q.negotiation_hash.toLowerCase()) throw new Error("The quote contents do not match the seller's signed terms.");
   const description = canonicalJson({ ...content, negotiation_hash: q.negotiation_hash, provider_sig: q.provider_sig });
