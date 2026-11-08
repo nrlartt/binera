@@ -31,7 +31,7 @@ export async function GET() {
         source,
         contracts: entries,
         paymentToken: config?.paymentToken ?? null,
-        note: "Status is read from operator configuration (environment or the activated deployment file) and BSC bytecode only. Contracts are not deployed by this application; an address without code is reported as such, never assumed live.",
+        note: "Status is read from operator configuration (environment or the activated deployment file) and on-chain bytecode only. An address without bytecode is reported as such; this server does not deploy contracts.",
         sourceDoc: "docs/contracts.md",
       };
     }, 120_000);

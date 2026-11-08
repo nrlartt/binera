@@ -1,7 +1,9 @@
 require("dotenv").config({ path: ".env.local" });
 require("@nomicfoundation/hardhat-toolbox");
 
-const accounts = process.env.DEPLOYER_PRIVATE_KEY ? [process.env.DEPLOYER_PRIVATE_KEY] : [];
+const testnetAccounts = process.env.DEPLOYER_PRIVATE_KEY ? [process.env.DEPLOYER_PRIVATE_KEY] : [];
+const mainnetKey = process.env.MAINNET_DEPLOYER_PRIVATE_KEY || process.env.DEPLOYER_PRIVATE_KEY;
+const mainnetAccounts = mainnetKey ? [mainnetKey] : [];
 
 /** @type {import("hardhat/config").HardhatUserConfig} */
 module.exports = {
@@ -20,12 +22,12 @@ module.exports = {
     bscTestnet: {
       url: process.env.BSC_TESTNET_RPC || "https://data-seed-prebsc-1-s1.binance.org:8545",
       chainId: 97,
-      accounts,
+      accounts: testnetAccounts,
     },
     bsc: {
       url: process.env.BSC_RPC_URL || "https://bsc-dataseed.bnbchain.org",
       chainId: 56,
-      accounts,
+      accounts: mainnetAccounts,
     },
   },
 };

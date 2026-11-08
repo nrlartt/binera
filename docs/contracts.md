@@ -1,8 +1,19 @@
 # On-chain protocol contracts
 
-Four Solidity contracts back the remaining marketplace primitives that an off-chain index cannot enforce. They are written and tested against the local Hardhat EVM, and deployed on **BSC testnet (chain 97)**. Mainnet is not deployed yet. No UI reads them until operator addresses are configured, so no fake on-chain state is shown.
+Four Solidity contracts back the remaining marketplace primitives that an off-chain index cannot enforce. They are written and tested against the local Hardhat EVM, deployed on **BSC testnet (chain 97)** and **BNB Smart Chain mainnet (chain 56)**. No UI reads them until operator addresses are configured, so no fake on-chain state is shown.
 
-## Current testnet deployment
+## Current mainnet deployment (chain 56)
+
+| Contract | Address |
+| --- | --- |
+| `BineraStake` | `0x6c8e85578cFDF4f5d76bEa50bDe59219a084c9bB` |
+| `BineraReputation` | `0x710816e9D8DC8D65D208da5b830CAC85B6c0f927` |
+| `BineraArbitration` | `0x6477Aca6E76b186e541C9cE0E3BF09186cCe62Bb` |
+| `BineraBountyVault` | `0xe8977Ddbf8b891121A08c0E4ed1029DCAe4956ce` |
+
+Payment token: U `0x55d398326f99059fF775485246999027B3197955`. Deployer `0xB004…91c2`, arbiter `0x5d49…3b8f`. Deployment spent approximately 0.000138 BNB; no user funds were deposited. The arbiter is currently an **EOA**; because it is immutable, moving to a multisig requires deploying a new stake contract. Full hashes: `submission/evidence/mainnet-protocol.json`. Source verification on BscScan still requires an API key.
+
+## Current testnet deployment (chain 97)
 
 | Contract | Address |
 | --- | --- |
@@ -12,6 +23,8 @@ Four Solidity contracts back the remaining marketplace primitives that an off-ch
 | `BineraBountyVault` | `0x9338B39FD6DA8bF1c230bE26A5A73F33800a2c0d` |
 
 Payment token: test-only `MockERC20` at `0xa10409bFBCf29cE043525399C6BC39Aca457B8dA`. Deployer `0xbAa1…090f`, arbiter `0x5d49…3b8f`. A 1 mU stake and a two-slot bounty were executed to verify reads. Full hashes: `submission/evidence/testnet-protocol.json`. These are testnet-only records.
+
+## Contracts
 
 | Contract | Purpose | Trust boundary |
 | --- | --- | --- |
@@ -80,4 +93,4 @@ The console was verified end-to-end against a local Hardhat chain: four live con
 - No upgradeability, no proxy admin, no owner-withdraw function. Stake can only leave through `unstake` or `slash`; bounty funds only through `approveSlot` or `cancelBounty`.
 - `BineraArbitration` writes verdicts but does not release escrow. Wiring a verdict to slashing is a separate, reviewable operator action.
 - Bounty approval is creator-controlled. A production deployment should consider an evaluator quorum instead of a single creator for high-value bounties. Rejected slots can be reopened by the creator before the deadline; approved slots cannot.
-- Independent review and a funded testnet run are required before mainnet use. Passing tests here is not an audit.
+- Independent review and a funded testnet run are required before material mainnet use. The current mainnet deployment has **not** been independently audited; passing tests and deployed bytecode are not an audit. Do not stake material funds or fund large bounties until that review is complete.

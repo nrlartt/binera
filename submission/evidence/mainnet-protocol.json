@@ -1,0 +1,44 @@
+{
+  "network": "BNB Smart Chain",
+  "chainId": 56,
+  "deployedAt": "2026-11-08T20:54:18.534Z",
+  "deployer": "0xB00463fD239752bA7f0d8C9482E7C308812191c2",
+  "arbiter": "0x5d49206335Fd9d51358aBeB551365464D9c83b8f",
+  "arbiterType": "EOA",
+  "paymentToken": {
+    "address": "0x55d398326f99059fF775485246999027B3197955",
+    "symbol": "U"
+  },
+  "contracts": {
+    "stake": { "address": "0x6c8e85578cFDF4f5d76bEa50bDe59219a084c9bB", "txHash": "0x223643959743deadaabfc7c80a239e60e36822712731210cd284b00efc19bf68", "block": 132460026, "bytecodeBytes": 4864 },
+    "reputation": { "address": "0x710816e9D8DC8D65D208da5b830CAC85B6c0f927", "txHash": "0xcf2bcb0714e57284d4230c6cca01efe74bf8342b1e4ee211a404c4e4f69c8e9a", "block": 132460033, "bytecodeBytes": 3040 },
+    "arbitration": { "address": "0x6477Aca6E76b186e541C9cE0E3BF09186cCe62Bb", "txHash": "0x12168ea3dfafa8e1cfcc9ea0d46a4ad4da368310f09ce49fe415fb73da10c6ff", "block": 132460040, "bytecodeBytes": 7118 },
+    "vault": { "address": "0xe8977Ddbf8b891121A08c0E4ed1029DCAe4956ce", "txHash": "0x70d374bad1e81fb44aaad4f58e9be1bb930bede599327afd469127606fbfa708", "block": 132460046, "bytecodeBytes": 7998 }
+  },
+  "observedState": {
+    "source": "GET /api/protocol",
+    "chainId": 56,
+    "contractStates": ["live", "live", "live", "live"],
+    "totalStaked": "0",
+    "bountyCount": 0,
+    "caseCount": 0,
+    "paymentToken": "0x55d398326f99059fF775485246999027B3197955"
+  },
+  "deploymentCost": {
+    "deployerBalanceBefore": "0.005118428988307078",
+    "deployerBalanceAfter": "0.004980861145144536",
+    "spentBnbApprox": "0.000137567843162542"
+  },
+  "explorer": "https://bscscan.com",
+  "verification": {
+    "bytecodeChecked": true,
+    "sourceVerifiedOnBscScan": false,
+    "note": "Bytecode presence was checked through a public RPC. Source verification needs a BscScan API key and was not performed."
+  },
+  "riskNotes": [
+    "The arbiter is an EOA, not a multisig. The arbiter can slash staked balances; move to a multisig by deploying a new stake contract when governance is ready, because the arbiter is immutable.",
+    "No user funds were deposited, staked or moved. Only deployment gas was spent.",
+    "Contracts are deployed but not yet source-verified on BscScan."
+  ],
+  "note": "Public mainnet records only. No private keys, seed phrases or API secrets are included."
+}
