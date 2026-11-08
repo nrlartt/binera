@@ -44,6 +44,6 @@ export function Protocol() {
       <section className="research-card"><h3><Code2 size={18} />Operator deploy</h3><p>Deployment needs a funded wallet, the payment token address and an arbiter multisig. You can deploy all four contracts from this browser with your own wallet — Binera never receives your key.</p><Link className="text-button" href="/protocol/deploy">Open the wallet deployer <ArrowUpRight size={13} /></Link></section>
     </div>
 
-    <section className="protocol-next"><Boxes size={20} /><div><strong>Deployment checklist</strong><p>Fund a dedicated deployer, configure the arbiter multisig, deploy to BSC testnet, verify each address, run a funded dispute and bounty scenario, then set the operator env values. Until then this page stays honest.</p></div></section>
+    <section className="protocol-next"><Boxes size={20} /><div><strong>Deployment checklist</strong><p>Fund a dedicated deployer, configure the arbiter multisig, deploy to BSC testnet, verify each address, run a funded dispute and bounty scenario, then set the operator env values. Until then this page stays honest.</p><p><Link className="text-button" href="/protocol/console">Open the live contract console</Link></p></div></section>
   </div>;
 }

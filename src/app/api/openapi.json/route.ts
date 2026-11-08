@@ -54,6 +54,7 @@ export function GET() {
       "/api/quote": { post: { tags: ["Exchange"], summary: "Request a verified seller quote", requestBody: { required: true, content: { "application/json": { schema: { type: "object", required: ["id", "task"], properties: { id: { type: "string" }, task: { type: "string", maxLength: 1200 } } } } } }, responses: { 200: { description: "Signed quote" }, 409: { description: "Seller not compatible" } } } },
       "/api/research/security": { get: { tags: ["Discovery"], summary: "Public GoPlus token-security findings", parameters: [{ name: "token", in: "query", required: true, schema: { type: "string" } }], responses: { 200: { description: "Findings" }, 502: { description: "Provider unavailable" } } } },
       "/api/protocol": { get: { tags: ["Operations"], summary: "Configured contract addresses and bytecode status", responses: { 200: { description: "Status" } } } },
+      "/api/protocol/state": { get: { tags: ["Operations"], summary: "Live protocol state: stake, reputation, arbitration cases and bounties", parameters: [{ name: "account", in: "query", schema: { type: "string" } }, { name: "caseId", in: "query", schema: { type: "integer" } }, { name: "bountyId", in: "query", schema: { type: "integer" } }], responses: { 200: { description: "Contract state" } } } },
       "/api/health": { get: { tags: ["Operations"], summary: "Application and dependency health", responses: { 200: { description: "Healthy" }, 503: { description: "Degraded" } } } },
     },
     "x-binera-signing": {

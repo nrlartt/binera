@@ -1,5 +1,5 @@
 import { readProtocolConfig, protocolCacheKey } from "@/lib/server/protocol-config";
-import { publicClient } from "@/lib/server/chain";
+import { protocolClient } from "@/lib/server/protocol-client";
 import { cached, errorResponse } from "@/lib/server/http";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -20,13 +20,13 @@ export async function GET() {
         if (!address) return { key: slot.key, name: slot.name, purpose: slot.purpose, state: "not-configured" as const, address: null, codePresent: false };
         let codePresent = false;
         try {
-          const code = await publicClient.getCode({ address });
+          const code = await protocolClient.getCode({ address });
           codePresent = Boolean(code && code !== "0x");
         } catch { codePresent = false; }
         return { key: slot.key, name: slot.name, purpose: slot.purpose, state: codePresent ? "live" as const : "address-without-code" as const, address, codePresent };
       }));
       return {
-        chainId: 56,
+        chainId: await protocolClient.getChainId().catch(() => 56),
         observedAt: new Date().toISOString(),
         source,
         contracts: entries,

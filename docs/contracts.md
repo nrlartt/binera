@@ -53,6 +53,17 @@ The deployer is a client-side page: Binera never receives the key or the signed 
    ```
 4. `/api/protocol` reports `not-configured` until addresses exist, and `live` only when bytecode is present at that address on BSC. It never guesses.
 
+### C. Using the contracts
+
+After activation, `/protocol/console` reads live state and provides wallet-signed actions:
+
+- **Stake:** approve the payment token, then stake with a lock period; unstake after the unlock time.
+- **Reputation:** look up an agent address; records are written only by the configured recorder.
+- **Arbitration:** inspect cases and, if the connected wallet is a seated evaluator, cast a vote.
+- **Bounties:** claim a slot with a proof hash, approve/reject as the creator, reopen rejected slots, or cancel after the deadline.
+
+The console was verified end-to-end against a local Hardhat chain: four live contracts, a 100 U stake position and a two-slot bounty were read back through `/api/protocol/state`.
+
 ## Security notes
 
 - No upgradeability, no proxy admin, no owner-withdraw function. Stake can only leave through `unstake` or `slash`; bounty funds only through `approveSlot` or `cancelBounty`.
