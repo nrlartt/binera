@@ -8,7 +8,7 @@ Domain: normalized source-agnostic Agent records, four equal categories, explici
 
 UI: discovery, category filters, detail, compatible side-by-side comparison, permission review, activation and dashboard. Progressive disclosure keeps protocol details out of the primary experience. Search never fabricates data. Optional LLM extracts intent only, validated against a strict schema; deterministic filtering and ranking always run locally.
 
-Integrations: 8004scan public API (anonymous works) with server-side source totals and bounded offset pagination, configured BNB Studio A2A cards, Altana SDK on BSC, official PancakeSwap contract reads, optional TermiX MCP read-only tools. The 8004scan key is server-only and changes quota, not evidence status. No arbitrary registry endpoint may be fetched without SSRF checks. Remote requests have deadlines, bounded bodies and no automatic redirects.
+Integrations: 8004scan public API (anonymous works) with server-side source totals and bounded offset pagination, configured BNB Studio A2A cards, Altana SDK on BSC, official PancakeSwap contract reads, and the public GoPlus token-security API for read-only token research. The 8004scan key is server-only and changes quota, not evidence status. No arbitrary registry endpoint may be fetched without SSRF checks. Remote requests have deadlines, bounded bodies and no automatic redirects.
 
 Activation: retrieve a live seller card, validate its published contract/payment information and identity before offering escrow. Unknown interfaces display requirements. Do not treat an A2A badge or prose mentioning ERC-8183 as authorization to pay an arbitrary owner. A paid research job is not portfolio automation. Its results require review before any DeFi transaction.
 

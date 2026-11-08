@@ -57,9 +57,9 @@ npx --yes @railway/cli@5.49.6 variable set --service binera "APP_ORIGIN=https://
 | `BSC_RPC_URL` | Yukarıda public BSC RPC tanımlanır. Production için kendi sağlayıcının HTTPS RPC adresini kullanabilirsin. |
 | `OPENAI_API_KEY`, `OPENAI_MODEL` | İsteğe bağlı intent interpretation. Anahtar yoksa kurallar çalışır; ranking deterministiktir. Model örneği `.env.example` içinde. |
 | `STUDIO_AGENT_URLS` | İsteğe bağlı gerçek Studio A2A card HTTPS URL'leri; virgülle ayır. |
-| `TERMIX_MCP_URL`, `TERMIX_MCP_TOKEN` | Gerçek uzak TermiX MCP köprüsü sağlandıysa tanımla. |
+| `OPENAI_API_KEY` | İsteğe bağlı; niyet çıkarımını kurallardan modele taşır. |
 
-Gizli anahtarları komut geçmişine veya `NEXT_PUBLIC_` değişkenlerine koyma. Boş değerleri eklemen gerekmez. Container TermiX stdio server'ını içermez; bu kurulumda `TERMIX_COMMAND` tanımlamak tek başına onu kurmaz. Uzak MCP köprüsü ayrı çalışmalıdır.
+Gizli anahtarları komut geçmişine veya `NEXT_PUBLIC_` değişkenine koyma. Token güvenlik taraması public GoPlus API'sini kullanır; ayrı bir MCP sunucusu veya anahtar gerekmez.
 
 ## 3. Yayını doğrula
 

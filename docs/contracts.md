@@ -19,6 +19,21 @@ The suite covers lock expiry, zero/oversized amounts, arbiter-only slashing, sco
 
 ## Deployment (operator action)
 
+Two supported paths. Both keep the private key out of the repository and out of the server.
+
+### A. Browser deployer (recommended)
+
+1. Open `/protocol/deploy` and connect your own wallet.
+2. Switch to BSC testnet (97) or mainnet (56) and review the gas estimate.
+3. Enter the payment token (U on BSC) and the arbiter address (a multisig or timelock for production).
+4. Sign the four deployment transactions. The page shows each hash, waits for the receipt and verifies that bytecode exists at the reported address.
+5. Copy the generated env block, add it to the server environment and restart the app. `/protocol` will then report each contract as `live` only after checking bytecode on BSC.
+6. Optional activation without restart: set a long random `OPERATOR_TOKEN` on the server, enter it in the deployer and press **Activate on this server**. The addresses are written to the ignored `.data/protocol.json` runtime file (never a private key), and `/protocol` re-reads bytecode immediately.
+
+The deployer is a client-side page: Binera never receives the key or the signed transaction beyond what the wallet itself broadcasts.
+
+### B. CLI deployer
+
 1. Fund a deployer wallet on the target network. Never reuse a treasury key.
 2. Set environment variables for the session (never commit them):
    ```powershell

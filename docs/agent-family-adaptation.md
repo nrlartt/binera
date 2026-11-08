@@ -33,7 +33,7 @@ Bu gözlemler Binera'da **hangi davranışların zaten doğru yapıldığını**
 | --- | --- |
 | Ana sayfa canlı ağ okuması | `stat-tile` kümesi: `/api/registry/stats` (toplam BSC kayıtlı agent'lar, A2A/MCP yayını), `/api/market` (PancakeSwap v3 spot bloğu), `reviewed catalogue`sayısı — üçü de `ts`-the-source notlu. |
 | Sayfa başı "ne yaptıralım" giriş | Zaten `/` üzerinde var; mevcut akışla birleşti. |
-| `/scan` (token doğrula) | **Token scan** kartı → var olan `/api/research/security` (TermiX BSC MCP `Token_Security_Check`), kanıt + not + "ünconfigured provider" durum mesajı ile kullanım. |
+| `/scan` (token doğrula) | **Token scan** kartı → kendi `/api/research/security` entegrasyonumuz (public GoPlus token-security API), kanıt + not ile kullanım. |
 | `/quant` havuz/aracı araştırma | **Pool / Account health** kartı → var olan `/api/research/context` (`kind=pool` PancakeSwap v3 queer factory doğrulamalı; `kind=health` Venus Core getAccountLiquidity). |
 | Servifere/ticari "hizmetler" dizini | **x402 agent hizmetleri** bölümü — var olan `XonaServices`, xona x402 katalog plus payment preview. |
 | Öne çıkan (featured) servis kartları | **Reviewed sellers** bölümü: `/api/discover` (derlemiş araştırma derlemesi) → kanıt rozetli 8 kart + agent detay bağı. |
@@ -66,7 +66,7 @@ Referans kanıtları: agent.family `/trust` sayfası (escrow → challenge → p
 ## 4. Doğrulama
 
 - `npm run typecheck`, `npm run lint`, `npm test` (50/50; pazaryeri, imza, bounty, SDK, job pencereleri ve cihaz verisi testleri): temiz.
-- `npm run build` (production): başarılı; `/research`, `/exchange` ve `/leaderboard` dahil 24 rota. Production başlıkları doğrulandı (HSTS, DNS-Prefetch, mevcut korumalar); `/api/health` → `chain: ok`, `discovery: ok`, `termix: configured-not-probed`.
+- `npm run build` (production): başarılı; `/research`, `/exchange` ve `/leaderboard` dahil 24 rota. Production başlıkları doğrulandı (HSTS, DNS-Prefetch, mevcut korumalar); `/api/health` → `chain: ok`, `discovery: ok`, `tokenSecurity: goplus-public`.
 - **Agent exchange E2E:** Gerçek EIP-191 imzalı üç yazma uçtan uca doğrulandı — talep 201, teklif 201, kabul 200; anlık görüntüde durum `accepted`. Sahte imza 401 ile reddedildi. UI `/exchange` canlı yüklendi; talep, iki teklif ve hizmet listesi kartlarıyla render edildi; konsol hatası yok.
 - **Bounty E2E:** 3 slotlu talep; iki teklif sonrası bir slot kabul edildi → `1/3`, talep açık kaldı, ikinci teklif `pending`, UI "Bounty · 1/3 slots" gösterdi.
 - **Leaderboard E2E:** canlı 8004scan verisinden 25 satır, 4 kategori lideri; sayfa konsol hatasız. Kaynak toplamı 376.990 kayıt.

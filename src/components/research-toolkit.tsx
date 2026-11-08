@@ -72,14 +72,14 @@ export function ResearchToolkit() {
     <div className="research-grid">
       <section className="research-card">
         <h3><SearchCheck size={18} />Token scan</h3>
-        <p>Run token-level security research through an operator-configured TermiX BSC MCP provider. Output is untrusted publisher data, rendered as text — never a guarantee that a token is safe.</p>
+        <p>Run token-level security research through the public GoPlus token-security API. Output is untrusted publisher data, rendered as text — never a guarantee that a token is safe.</p>
         <label className="field-label">Token contract address
           <input className="research-input" value={token} onChange={e => { setToken(e.target.value); setSecurity(null); setScanError(""); }} placeholder="0x… BSC token" spellCheck={false} inputMode="text" />
         </label>
         <button className="button primary full" disabled={scanBusy} onClick={() => void runScan()}>{scanBusy ? <LoaderCircle size={15} className="spin" /> : <ShieldCheck size={15} />}{scanBusy ? "Scanning…" : "Scan token"}</button>
         {scanError && <ErrorNotice message={scanError} />}
         {security && <div className="notice"><div><strong>Findings received · {dateLabel(security.observedAt)}</strong><pre className="scan-result">{security.content}</pre><small>{security.note}</small></div></div>}
-        <small>If the provider is unavailable, the scan reports that token research is not connected yet instead of inventing findings.</small>
+        <small>If the provider is rate-limited or unavailable, the scan reports that instead of inventing findings.</small>
       </section>
 
       <section className="research-card">

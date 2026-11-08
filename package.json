@@ -12,6 +12,7 @@
     "test": "tsx --test tests/*.test.ts",
     "test:contracts": "hardhat test",
     "compile:contracts": "hardhat compile",
+    "export:artifacts": "node scripts/export-contract-artifacts.cjs",
     "deploy:protocol": "hardhat run scripts/deploy-protocol.cjs",
     "test:live": "tsx scripts/live-check.ts",
     "test:e2e": "playwright test",
@@ -23,7 +24,6 @@
   },
   "dependencies": {
     "@altananetwork/sdk": "^0.9.0",
-    "@modelcontextprotocol/sdk": "^1.30.0",
     "lucide-react": "^1.43.0",
     "next": "^16.3.4",
     "ox": "^0.14.44",

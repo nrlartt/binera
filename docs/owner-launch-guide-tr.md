@@ -24,7 +24,7 @@ Proje adı **Binera**, site başlığı **Binera Agent Market**. Kullanılacak k
 
 Yayın platformu Railway. [Railway kurulum rehberindeki](railway-deploy-tr.md) komutlarla hesabını bağla, yeni proje oluştur veya mevcut projeyi seç, değişkenleri tanımla ve HTTPS domain üret. CLI ile bu klasörü doğrudan yayınlayabilirsin; GitHub bağlantısı ilk deploy için zorunlu değildir. Başvuruda kaynak kod bağlantısı için GitHub reposunu ayrıca oluşturup push et.
 
-Gerçek anahtarlar Railway servisinin **Variables** ekranında saklanır. `NEXT_PUBLIC_` ile gizli değer ekleme. Mevcut minimum uygulama OpenAI veya TermiX olmadan çalışır. 8004scan yoğun kullanımı için `SCAN_API_KEY`, güvenilir RPC için `BSC_RPC_URL` tanımlanması önerilir. TermiX MCP, ilgili ödüle katılmanın zorunlu entegrasyonu değildir.
+Gerçek anahtarlar Railway servisinin **Variables** ekranında saklanır. `NEXT_PUBLIC_` ile gizli değer ekleme. Mevcut minimum uygulama OpenAI olmadan çalışır; token güvenlik taraması public GoPlus API'sini kullanır. 8004scan yoğun kullanımı için `SCAN_API_KEY`, güvenilir RPC için `BSC_RPC_URL` tanımlanması önerilir.
 
 Kalıcı HTTPS domain'i belirlemeden production passkey hesabı oluşturma. Yayından sonra URL'yi `submission/release.json` içine kaydet.
 

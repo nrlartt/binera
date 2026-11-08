@@ -39,10 +39,13 @@ npm start
 - Altana passkey account creation/recovery, public credential-handle recovery before the first onchain operation, scoped hiring sessions and ERC-8183 job funding. A public revocation reference is saved before session submission. Signing keys are never stored in localStorage or sent to this server.
 - A wallet-signed agent exchange: priced service listings, open requests, offers and acceptances with replay-safe EIP-191 envelopes, strict payload schemas, live SSE events and a documented agent API. The exchange records intent; settlement stays in the ERC-8183 escrow job.
 - Multi-slot bounty requests, a live registry-feedback leaderboard with separate evidence levels, and an agent SDK (`src/lib/agent-client.ts`) with a runnable example.
-- Deployment-ready Solidity protocol: agent stake, reputation records, three-seat arbitration verdicts and a multi-slot bounty vault, with 10 Hardhat tests and an operator deploy script. Contracts are not deployed or wired by default; `/protocol` reports real configuration and BSC bytecode status only.- The flagship activation buys a **research deliverable**. It does not claim to automate swaps, grid orders, LP positions or liquidation protection. Exact contracts, method selectors, U cap, BNB fee cap and 15-minute expiry are disclosed. The in-browser hiring key is never sent to the seller and is discarded when the operation/tab ends.
+- Deployment-ready Solidity protocol: agent stake, reputation records, three-seat arbitration verdicts and a multi-slot bounty vault, with 11 Hardhat tests and an operator deploy script. Contracts are not deployed or wired by default; `/protocol` reports real configuration and BSC bytecode status only.
+- A browser deployer at `/protocol/deploy`: the operator connects their own wallet and deploys all four contracts without sharing a private key, verifies bytecode and receives a copy-ready environment block; with `OPERATOR_TOKEN` configured it can also activate the deployment without a restart.
+- First-party token research through the public GoPlus API (no MCP server or third-party adapter), plus an OpenAPI 3.1 description at `/api/openapi.json` and `/llms.txt` for agent integration.
+- The flagship activation buys a **research deliverable**. It does not claim to automate swaps, grid orders, LP positions or liquidation protection. Exact contracts, method selectors, U cap, BNB fee cap and 15-minute expiry are disclosed. The in-browser hiring key is never sent to the seller and is discarded when the operation/tab ends.
 - Real job state, raw-manifest hash verification, delivery retry, settlement/dispute/refund and onchain revocation. Escrow and session revocation are separate operations. No successful state or transaction hash is invented.
 - PancakeSwap v3 pool research reads the official factory, pool slot and ERC-20 balances at a single real BSC block. It reports a spot price, fee tier, balances and source time; it does not infer APY or claim these balances are audited TVL.
-- TermiX adapter supports the official BSC MCP stdio server, or an operator-provided HTTPS MCP bridge. It exposes only the real `Token_Security_Check` tool for token-level research. No private-key operations are exposed. It is unavailable until a transport is configured.
+- Token-level security research reads the public GoPlus token-security API directly. Findings are rendered as text, never as a safety rating. No private-key operations are exposed or required.
 
 ## Verification
 
@@ -82,7 +85,7 @@ Profile name/bio are local device preferences, scoped to the connected passkey m
 - Sessions use exact contract/function allowlists; arguments such as the seller are chosen by the application, not constrained individually by the session validator. Token approval is for the exact budget. Revocation does not undo completed work or cancel funded escrow.
 - Monitor submitted jobs: optimistic escrow has a dispute window. The UI exposes dispute and settlement actions and the contracts enforce their windows. Failed/rejected/time-out responses never count as confirmation. Pending submissions must be reconciled before resubmission.
 - Caches and API rate guards are bounded per process. Configure an ingress/WAF rate limit and provider spending limits for a multi-instance public deployment. Anonymous discovery quotas can be increased with a server-side `SCAN_API_KEY`.
-- TermiX is not a general agent discovery API. Its official server is stdio. Configure `TERMIX_COMMAND` and JSON `TERMIX_ARGS` for a separately installed server, or `TERMIX_MCP_URL` for your bridge. Do not put a user wallet or private key in that server. The marketplace has not verified a live TermiX deployment in this environment.
+- Token research uses GoPlus's public read-only API with server-side request bounds. It does not establish that a token is safe, and the API can be rate-limited or unavailable.
 - Browser-created session keys are ephemeral. This application offers paid research hiring, not an always-on portfolio execution worker. There are no fabricated first-party agents to fill that gap.
 - Publisher endpoints are untrusted. Server requests resolve and pin a public IPv4 address, disallow credentials/non-HTTPS/redirects, limit bodies and set deadlines. Signed descriptions and deliverables render as text, never HTML.
 
@@ -93,7 +96,7 @@ Profile name/bio are local device preferences, scoped to the connected passkey m
 - [BNB SDK signed negotiation wire format](https://github.com/bnb-chain/bnbagent-sdk/blob/main/typescript/src/erc8183/negotiation.ts)
 - [Altana sessions](https://docs.altana.network/concepts/sessions), [passkeys](https://docs.altana.network/sdk/create-passkey-wallet), [ERC-8183](https://docs.altana.network/sdk/erc8183)
 - [PancakeSwap contract addresses](https://developer.pancakeswap.finance/contracts/v3/addresses)
-- [TermiX BSC MCP](https://github.com/TermiX-official/bsc-mcp)
+- [GoPlus token security API](https://docs.gopluslabs.io/reference/token-security-api)
 - [OpenAI structured outputs](https://developers.openai.com/api/docs/guides/structured-outputs)
 
 See [architecture decision](docs/architecture.md) for repository inspection and boundaries.

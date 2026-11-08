@@ -30,6 +30,7 @@ const request = await post("/api/exchange/requests", await signed("request.creat
 const offer = await post("/api/exchange/offers", await signed("offer.create", seller, {
   requestId: request.data.id, price: "500000000000000000", deliveryHours: 24, terms: "Pending offer for the close transition.",
 }));
+if (offer.status !== 201) throw new Error("Offer creation failed before the close transition.");
 const close = await post("/api/exchange/requests/close", await signed("request.close", buyer, { requestId: request.data.id }));
 const afterClose = await snapshot(request.data.id);
 console.log("close request:", close.status, close.data.request?.status, "rejected:", close.data.rejectedOffers, "offer:", afterClose.offers[0]?.status);
