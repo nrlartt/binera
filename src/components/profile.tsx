@@ -6,6 +6,7 @@ import { z } from "zod";
 import type { Agent } from "@/lib/domain";
 import { useMarket } from "./shell";
 import { api, CopyAddress } from "./ui";
+import { DeviceData } from "./device-data";
 
 const event = "binera-preferences";
 function subscribe(fn: () => void) { window.addEventListener(event, fn); window.addEventListener("storage", fn); return () => { window.removeEventListener(event, fn); window.removeEventListener("storage", fn); }; }
@@ -31,7 +32,7 @@ export function SavedAgents() {
     async function worker() { while (pending.length && !controller.signal.aborted) { const id = pending.shift()!; try { const a = await api<Agent>(`/api/agents/${id}`, { signal: controller.signal }); if (!controller.signal.aborted) setItems(old => ({ ...old, [id]: a })); } catch { if (!controller.signal.aborted) setItems(old => ({ ...old, [id]: null })); } } }
     void Promise.all([worker(), worker()]); return () => controller.abort();
   }, [key]);
-  return <div className="page"><div className="eyebrow">YOUR SHORTLIST</div><h1>Saved agents</h1><p>Saved in this browser. Identity details are retrieved from the live registry.</p>{!ids.length ? <div className="empty"><Bookmark /><h2>Keep a few specialists in mind.</h2><Link className="button primary" href="/">Discover agents</Link></div> : <div className="job-list">{ids.map(id => <article className="job-card" key={id}><div className="job-card-header"><Link href={`/agents/${id}`}><h3>{items[id]?.name || id}</h3></Link><SaveAgent id={id} name={items[id]?.name || id} /></div><p>{items[id]?.description || (items[id] === null ? "Live details unavailable. Open the agent to retry." : "Refreshing identity…")}</p>{items[id] && <button className="button" onClick={() => toggleCompare(items[id]!)}>Add to comparison</button>}</article>)}</div>}</div>;
+  return <div className="page"><div className="eyebrow">YOUR SHORTLIST</div><h1>Saved agents</h1><p>Saved in this browser. Identity details are retrieved from the live registry.</p><DeviceData />{!ids.length ? <div className="empty"><Bookmark /><h2>Keep a few specialists in mind.</h2><Link className="button primary" href="/">Discover agents</Link></div> : <div className="job-list">{ids.map(id => <article className="job-card" key={id}><div className="job-card-header"><Link href={`/agents/${id}`}><h3>{items[id]?.name || id}</h3></Link><SaveAgent id={id} name={items[id]?.name || id} /></div><p>{items[id]?.description || (items[id] === null ? "Live details unavailable. Open the agent to retry." : "Refreshing identity…")}</p>{items[id] && <button className="button" onClick={() => toggleCompare(items[id]!)}>Add to comparison</button>}</article>)}</div>}</div>;
 }
 const profileSchema = z.object({ name: z.string().trim().max(60), bio: z.string().trim().max(240) });
 function ProfileEditor({ storageKey }: { storageKey: string }) {

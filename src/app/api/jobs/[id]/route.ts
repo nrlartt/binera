@@ -7,8 +7,7 @@ import { errorResponse, PublicError, remoteText, cached } from "@/lib/server/htt
 export async function GET(request: Request, ctx: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await ctx.params; if (!/^\d{1,15}$/.test(id)) throw new PublicError("Invalid job reference.", 400);
-    const [job, block, windowSeconds] = await Promise.all([
-      getErc8183Job(serverNetwork, BigInt(id)), publicClient.getBlock(),
+    const [job, block, windowSeconds] = await Promise.all([      getErc8183Job(serverNetwork, BigInt(id)), publicClient.getBlock(),
       publicClient.readContract({ address: erc8183Addresses(56).policy, abi: parseAbi(["function disputeWindow() view returns (uint64)"]), functionName: "disputeWindow" }),
     ]);
     const actions = jobActions(job, block.timestamp, BigInt(windowSeconds));
@@ -28,6 +27,6 @@ export async function GET(request: Request, ctx: { params: Promise<{ id: string 
         deliverableStatus = "Hash verified against the onchain commitment";
       } catch { deliverableStatus = "Unable to retrieve or verify this deliverable. Do not approve it yet."; }
     }
-    return Response.json(JSON.parse(JSON.stringify({ ...job, actions, disputeDeadline, observedBlock: block.number.toString(), deliverableContent: deliverable, deliverableUrl, deliverableStatus, observedAt: new Date().toISOString() }, (_, v) => typeof v === "bigint" ? v.toString() : v)));
+    return Response.json(JSON.parse(JSON.stringify({ ...job, actions, disputeDeadline, observedBlock: block.number.toString(), chainTimestamp: block.timestamp.toString(), deliverableContent: deliverable, deliverableUrl, deliverableStatus, observedAt: new Date().toISOString() }, (_, v) => typeof v === "bigint" ? v.toString() : v)));
   } catch (e) { return errorResponse(e); }
 }

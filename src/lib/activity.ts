@@ -16,7 +16,7 @@ export const activitySchema = z.object({
   failureStage: z.enum(["balance", "permission", "funding", "delivery"]).optional(), failureReason: z.enum(["insufficient-funds", "permission-rejected", "user-rejected", "unconfirmed"]).optional(),
   createdAt: z.iso.datetime(), session, grantTx: tx.optional(), jobId: z.string().regex(/^\d{1,15}$/).optional(),
   fundingTx: tx.optional(), callsId: z.string().min(1).max(512).optional(), quote: z.string().max(4096), price: decimal.refine(p => /[1-9]/.test(p)),
-  provider: address.optional(), task: z.string().max(1200), status: z.enum(["permission-granted", "funded", "pending", "revoked"]), revokeTx: tx.optional(),
+  provider: address.optional(), task: z.string().max(1200), status: z.enum(["permission-granted", "funded", "pending", "failed", "revoked"]), revokeTx: tx.optional(),
 }).refine(a => a.id.toLowerCase() === a.session.publicKey.toLowerCase() && a.wallet.toLowerCase() === a.session.walletAddress.toLowerCase(), "Session does not match account");
 export type ActivityRecord = z.infer<typeof activitySchema>;
 const KEY = "agentmarket-activity-v1";

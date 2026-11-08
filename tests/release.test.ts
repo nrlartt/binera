@@ -44,6 +44,8 @@ test("activity imports validate account binding, integers and timestamps, and st
   const clean = parseActivity([{ ...record, privateKey: "DO_NOT_RETAIN", session: { ...record.session, signer: { secret: "DO_NOT_RETAIN" } } }]);
   assert.equal(JSON.stringify(clean).includes("DO_NOT_RETAIN"), false);
   for (const changed of [{ price: "not-a-number" }, { createdAt: "invalid" }, { jobId: "1/../2" }, { wallet: "0x" + "3".repeat(40) }, { session: { ...record.session, expiry: Infinity } }]) assert.equal(activitySchema.safeParse({ ...record, ...changed }).success, false);
+  assert.equal(activitySchema.safeParse({ ...record, status: "failed", failureStage: "funding", failureReason: "user-rejected" }).success, true);
+  assert.equal(activitySchema.safeParse({ ...record, status: "settled" }).success, false);
   assert.throws(() => parseActivity({ records: [] }));
 });
 test("settlement and dispute windows do not overlap, and delivery prevents expiry refund", () => {
